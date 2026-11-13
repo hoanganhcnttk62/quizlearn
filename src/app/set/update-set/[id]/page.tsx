@@ -769,19 +769,15 @@ export default function UpdateSetPage() {
                   />
                 </div>
 
-                {/* Language Settings for AI checking */}
-                <div className="p-4 bg-indigo-50/60 border border-indigo-100 rounded-lg">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Sparkles className="h-4 w-4 text-indigo-500" />
-                    <span className="text-sm font-semibold text-indigo-800">Cài đặt ngôn ngữ cho AI kiểm tra</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
+                {/* Language Settings for Term & Definition */}
+                <div className="pt-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1.5">
-                        Ngôn ngữ <strong>Thuật ngữ (Term)</strong>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {language === "vi" ? "Ngôn ngữ thuật ngữ" : "Term Language"}
                       </label>
                       <Select value={termLang} onValueChange={(v) => setTermLang(v as SupportedLanguage)}>
-                        <SelectTrigger className="h-9 text-sm bg-white">
+                        <SelectTrigger className="w-full">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -796,12 +792,13 @@ export default function UpdateSetPage() {
                         </SelectContent>
                       </Select>
                     </div>
+
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1.5">
-                        Ngôn ngữ <strong>Định nghĩa (Definition)</strong>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {language === "vi" ? "Ngôn ngữ định nghĩa" : "Definition Language"}
                       </label>
                       <Select value={defLang} onValueChange={(v) => setDefLang(v as SupportedLanguage)}>
-                        <SelectTrigger className="h-9 text-sm bg-white">
+                        <SelectTrigger className="w-full">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -817,9 +814,13 @@ export default function UpdateSetPage() {
                       </Select>
                     </div>
                   </div>
+
                   {termLang !== "auto" && defLang !== "auto" && termLang !== defLang && (
-                    <p className="mt-2 text-xs text-indigo-600">
-                      ✅ Chế độ học từ vựng chéo ngôn ngữ — AI sẽ không báo lỗi mismatch khi Term và Definition khác ngôn ngữ nhau.
+                    <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1.5">
+                      <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+                      {language === "vi"
+                        ? "Chế độ học từ vựng chéo ngôn ngữ — AI sẽ không báo lỗi khác biệt ngôn ngữ giữa hai vế."
+                        : "Cross-language mode active — AI will not flag language differences between term and definition."}
                     </p>
                   )}
                 </div>
