@@ -237,6 +237,39 @@ export default function CreateSetPage() {
     }
   };
 
+  const handleApplyInlineFix = (index: number, field: "term" | "definition", correctedValue: string) => {
+    // 1. Hủy bỏ timer kiểm tra tự động
+    if (typingTimeouts.current[index]) {
+      clearTimeout(typingTimeouts.current[index]);
+      delete typingTimeouts.current[index];
+    }
+
+    // 2. Cập nhật giá trị thẻ
+    const newTerms = [...terms];
+    newTerms[index][field] = correctedValue;
+    setTerms(newTerms);
+
+    // 3. Đánh dấu giá trị mới này đã được AI xác nhận chuẩn vào cache để không check lại khi blur/chuyển ô
+    const finalTerm = (field === "term" ? correctedValue : newTerms[index].term || "").trim().toLowerCase();
+    const finalDef = (field === "definition" ? correctedValue : newTerms[index].definition || "").trim().toLowerCase();
+    lastCheckedValues.current[index] = `${finalTerm}:::${finalDef}`;
+
+    // 4. Xóa gợi ý tương ứng
+    setInlineSuggestions((prev) => {
+      const updated = { ...prev };
+      if (updated[index]) {
+        if (field === "term") delete updated[index].suggestedTerm;
+        if (field === "definition") delete updated[index].suggestedDefinition;
+        if (!updated[index].suggestedTerm && !updated[index].suggestedDefinition) {
+          delete updated[index];
+        }
+      }
+      return updated;
+    });
+
+    toast.success(`Đã áp dụng gợi ý: "${correctedValue}"`);
+  };
+
   const handleApplySingleFix = (issue: any) => {
     setTerms((prev) => {
       const updated = [...prev];
@@ -645,13 +678,7 @@ export default function CreateSetPage() {
                                   onClick={() => {
                                     const corrected = inlineSuggestions[index].suggestedTerm;
                                     if (corrected) {
-                                      handleTermChange(index, "term", corrected);
-                                      setInlineSuggestions((prev) => {
-                                        const updated = { ...prev };
-                                        delete updated[index];
-                                        return updated;
-                                      });
-                                      toast.success(`Đã sửa thành: "${corrected}"`);
+                                      handleApplyInlineFix(index, "term", corrected);
                                     }
                                   }}
                                   className="px-2 py-0.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded text-[11px] transition-colors"
@@ -715,16 +742,7 @@ export default function CreateSetPage() {
                                   type="button"
                                   onClick={() => {
                                     const corrected = inlineSuggestions[index].suggestedDefinition!;
-                                    handleTermChange(index, "definition", corrected);
-                                    setInlineSuggestions((prev) => {
-                                      const updated = { ...prev };
-                                      if (updated[index]) {
-                                        delete updated[index].suggestedDefinition;
-                                        if (!updated[index].suggestedTerm) delete updated[index];
-                                      }
-                                      return updated;
-                                    });
-                                    toast.success(`Đã sửa định nghĩa thành: "${corrected}"`);
+                                    handleApplyInlineFix(index, "definition", corrected);
                                   }}
                                   className="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded text-[11px] transition-colors"
                                 >
