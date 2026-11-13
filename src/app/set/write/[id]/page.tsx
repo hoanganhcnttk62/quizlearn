@@ -30,6 +30,7 @@ import {
   DialogHeader,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Card {
   id: string;
@@ -44,6 +45,7 @@ interface Card {
 }
 
 export default function WriteModePage() {
+  const { t, language } = useLanguage();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { user } = useSelector((state: any) => state.auth);
@@ -407,14 +409,14 @@ export default function WriteModePage() {
                     {/* Input area */}
                     <div className="space-y-4">
                       <Label htmlFor="answer" className="text-lg">
-                        Write the term:
+                        {language === "vi" ? "Gõ thuật ngữ tương ứng:" : "Write the term:"}
                       </Label>
                       <Input
                         id="answer"
                         value={userAnswer}
                         ref={inputRef}
                         onChange={(e) => setUserAnswer(e.target.value)}
-                        placeholder="Type your answer here..."
+                        placeholder={language === "vi" ? "Nhập câu trả lời của bạn..." : "Type your answer here..."}
                         className="h-12"
                         disabled={answerSubmitted}
                         onKeyDown={(e) => {
@@ -427,13 +429,14 @@ export default function WriteModePage() {
                     </div>
 
                     {/* Feedback area */}
-                    {/* Feedback area */}
                     {isCheckingWithAI && (
                       <div className="p-4 rounded-lg mt-4 bg-indigo-50 border border-indigo-100 flex items-center space-x-3 text-indigo-700">
                         <Loader2 className="h-5 w-5 animate-spin text-indigo-600 flex-shrink-0" />
                         <span className="text-sm font-medium flex items-center gap-1.5">
                           <Sparkles className="h-4 w-4 text-indigo-500" />
-                          Gemini AI đang kiểm tra ngữ nghĩa và lỗi chính tả...
+                          {language === "vi" 
+                            ? "Gemini AI đang kiểm tra ngữ nghĩa và lỗi chính tả..." 
+                            : "Gemini AI is checking semantics and spelling..."}
                         </span>
                       </div>
                     )}
@@ -562,17 +565,17 @@ export default function WriteModePage() {
                           {isCheckingWithAI ? (
                             <>
                               <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                              Đang kiểm tra...
+                              {language === "vi" ? "Đang kiểm tra..." : "Checking..."}
                             </>
                           ) : (
-                            "Kiểm tra"
+                            language === "vi" ? "Kiểm tra" : "Check Answer"
                           )}
                         </Button>
                       ) : (
                         <Button ref={nextButtonRef} onClick={handleNextCard}>
                           {currentCardIndex < cards.length - 1
-                            ? "Thẻ tiếp theo"
-                            : "Hoàn thành"}
+                            ? (language === "vi" ? "Thẻ tiếp theo" : "Next Card")
+                            : (language === "vi" ? "Hoàn thành" : "Finish")}
                         </Button>
                       )}
                     </div>
@@ -587,25 +590,31 @@ export default function WriteModePage() {
         <Dialog open={isCompletedSession} onOpenChange={setIsCompletedSession}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>You've completed this set!</DialogTitle>
+              <DialogTitle>
+                {language === "vi" ? "Bạn đã hoàn thành bộ thẻ này!" : "You've completed this set!"}
+              </DialogTitle>
               <DialogDescription>
-                You got {correctAnswers} out of {cards.length} cards correct.
+                {language === "vi" 
+                  ? `Bạn trả lời đúng ${correctAnswers} trên tổng số ${cards.length} thẻ.` 
+                  : `You got ${correctAnswers} out of ${cards.length} cards correct.`}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="text-center">
                 <p className="mb-4 font-medium text-xl">
                   {correctAnswers === cards.length
-                    ? "Perfect score! Great job! 🎉"
+                    ? (language === "vi" ? "Điểm số tuyệt đối! Xuất sắc! 🎉" : "Perfect score! Great job! 🎉")
                     : correctAnswers > cards.length / 2
-                    ? "Well done! Keep practicing to improve. 👍"
-                    : "Keep studying to improve your score. 📚"}
+                    ? (language === "vi" ? "Làm rất tốt! Tiếp tục phát huy nhé. 👍" : "Well done! Keep practicing to improve. 👍")
+                    : (language === "vi" ? "Hãy tiếp tục ôn tập để nâng cao kết quả nhé. 📚" : "Keep studying to improve your score. 📚")}
                 </p>
                 <div className="flex justify-center gap-4">
                   <Button variant="outline" onClick={handleBackToDashboard}>
-                    Back to Set
+                    {language === "vi" ? "Quay về bộ thẻ" : "Back to Set"}
                   </Button>
-                  <Button onClick={handleStartOver}>Start Over</Button>
+                  <Button onClick={handleStartOver}>
+                    {t("study.startOver")}
+                  </Button>
                 </div>
               </div>
             </div>

@@ -85,22 +85,22 @@ export default function AdminDashboardPage() {
     try {
       await toggleUserStatus(id).unwrap();
       toast.success(
-        currentStatus === 1 ? "Đã khóa người dùng thành công" : "Đã mở khóa người dùng thành công"
+        currentStatus === 1 ? t("admin.lockUserSuccess") : t("admin.unlockUserSuccess")
       );
     } catch (err: any) {
-      toast.error(err?.data?.message || "Thao tác thất bại");
+      toast.error(err?.data?.message || t("common.error"));
     }
   };
 
   const handleDeleteSet = async (id: string, title: string) => {
-    if (!confirm(`Bạn có chắc muốn xóa vĩnh viễn bộ thẻ "${title}" và toàn bộ flashcard của nó không?`)) {
+    if (!confirm(t("admin.deleteSetConfirm", { title }))) {
       return;
     }
     try {
       await deleteAdminSet(id).unwrap();
-      toast.success("Đã xóa bộ thẻ thành công");
+      toast.success(t("admin.deleteSetSuccess"));
     } catch (err: any) {
-      toast.error(err?.data?.message || "Xóa bộ thẻ thất bại");
+      toast.error(err?.data?.message || t("admin.deleteSetError"));
     }
   };
 
@@ -113,13 +113,13 @@ export default function AdminDashboardPage() {
             <ShieldCheck className="w-9 h-9 text-rose-600 dark:text-rose-400" />
           </div>
           <h1 className="text-2xl font-bold text-foreground">
-            Truy Cập Bị Giới Hạn
+            {t("admin.accessDeniedTitle")}
           </h1>
           <p className="text-muted-foreground max-w-md mt-2 mb-6">
-            Bạn cần quyền Quản Trị Viên (Admin) để có thể xem và quản lý hệ thống QuizLearn.
+            {t("admin.accessDeniedDesc")}
           </p>
           <Button onClick={() => router.push("/dashboard")}>
-            Quay Về Trang Cá Nhân
+            {t("admin.backToDashboard")}
           </Button>
         </div>
       </PageLayout>
@@ -197,7 +197,7 @@ export default function AdminDashboardPage() {
               <Card className="border border-border/80 bg-card shadow-xs hover:shadow-md transition-shadow">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                    Người Dùng
+                    {t("admin.totalUsers")}
                   </CardTitle>
                   <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center">
                     <Users className="w-4 h-4" />
@@ -207,14 +207,14 @@ export default function AdminDashboardPage() {
                   <div className="text-2xl font-bold text-foreground">
                     {isStatsLoading ? "..." : stats?.totalUsers}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">Tài khoản đã đăng ký</p>
+                  <p className="text-xs text-muted-foreground mt-1">{t("admin.totalUsersDesc")}</p>
                 </CardContent>
               </Card>
 
               <Card className="border border-border/80 bg-card shadow-xs hover:shadow-md transition-shadow">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                    Bộ Thẻ Flashcard
+                    {t("admin.totalSets")}
                   </CardTitle>
                   <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 flex items-center justify-center">
                     <Layers className="w-4 h-4" />
@@ -224,14 +224,14 @@ export default function AdminDashboardPage() {
                   <div className="text-2xl font-bold text-foreground">
                     {isStatsLoading ? "..." : stats?.totalSets}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">Bộ học tập đang lưu hành</p>
+                  <p className="text-xs text-muted-foreground mt-1">{t("admin.totalSetsDesc")}</p>
                 </CardContent>
               </Card>
 
               <Card className="border border-border/80 bg-card shadow-xs hover:shadow-md transition-shadow">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                    Tổng Thẻ (Cards)
+                    {t("admin.totalCards")}
                   </CardTitle>
                   <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center">
                     <BookOpen className="w-4 h-4" />
@@ -241,14 +241,14 @@ export default function AdminDashboardPage() {
                   <div className="text-2xl font-bold text-foreground">
                     {isStatsLoading ? "..." : stats?.totalCards}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">Thuật ngữ & định nghĩa</p>
+                  <p className="text-xs text-muted-foreground mt-1">{t("admin.totalCardsDesc")}</p>
                 </CardContent>
               </Card>
 
               <Card className="border border-border/80 bg-card shadow-xs hover:shadow-md transition-shadow">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                    Thư Mục Học Tập
+                    {t("admin.totalFolders")}
                   </CardTitle>
                   <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center">
                     <Folder className="w-4 h-4" />
@@ -258,7 +258,7 @@ export default function AdminDashboardPage() {
                   <div className="text-2xl font-bold text-foreground">
                     {isStatsLoading ? "..." : stats?.totalFolders}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">Thư mục phân loại chủ đề</p>
+                  <p className="text-xs text-muted-foreground mt-1">{t("admin.totalFoldersDesc")}</p>
                 </CardContent>
               </Card>
             </div>
@@ -269,8 +269,8 @@ export default function AdminDashboardPage() {
               <Card className="border border-border/80 shadow-xs">
                 <CardHeader className="flex flex-row items-center justify-between pb-3">
                   <div>
-                    <CardTitle className="text-base font-semibold">Tài Khoản Mới Nhất</CardTitle>
-                    <CardDescription>Người dùng vừa gia nhập nền tảng</CardDescription>
+                    <CardTitle className="text-base font-semibold">{t("admin.recentUsers")}</CardTitle>
+                    <CardDescription>{t("admin.recentUsersDesc")}</CardDescription>
                   </div>
                   <Button
                     variant="ghost"
@@ -278,7 +278,7 @@ export default function AdminDashboardPage() {
                     className="text-xs text-blue-600 hover:text-blue-700"
                     onClick={() => setActiveTab("users")}
                   >
-                    Xem Chi Tiết &rarr;
+                    {t("admin.viewDetails")} &rarr;
                   </Button>
                 </CardHeader>
                 <CardContent>
@@ -304,7 +304,7 @@ export default function AdminDashboardPage() {
                               : "bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800"
                           }`}
                         >
-                          {u.statusId === 1 ? "Hoạt động" : "Đã khóa"}
+                          {u.statusId === 1 ? t("common.active") : t("common.locked")}
                         </span>
                       </div>
                     ))}
@@ -316,8 +316,8 @@ export default function AdminDashboardPage() {
               <Card className="border border-border/80 shadow-xs">
                 <CardHeader className="flex flex-row items-center justify-between pb-3">
                   <div>
-                    <CardTitle className="text-base font-semibold">Bộ Thẻ Mới Cập Nhật</CardTitle>
-                    <CardDescription>Bấm vào tiêu đề để mở học trực tiếp</CardDescription>
+                    <CardTitle className="text-base font-semibold">{t("admin.recentSets")}</CardTitle>
+                    <CardDescription>{t("admin.recentSetsDesc")}</CardDescription>
                   </div>
                   <Button
                     variant="ghost"
@@ -325,7 +325,7 @@ export default function AdminDashboardPage() {
                     className="text-xs text-blue-600 hover:text-blue-700"
                     onClick={() => setActiveTab("sets")}
                   >
-                    Xem Chi Tiết &rarr;
+                    {t("admin.viewDetails")} &rarr;
                   </Button>
                 </CardHeader>
                 <CardContent>
@@ -340,13 +340,13 @@ export default function AdminDashboardPage() {
                             href={`/set/${s.id}`}
                             target="_blank"
                             className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1.5 truncate group"
-                            title="Mở bộ thẻ này"
+                            title={t("admin.openSetTooltip")}
                           >
                             <span className="truncate">{s.title}</span>
                             <ExternalLink className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 flex-shrink-0" />
                           </Link>
                           <p className="text-xs text-muted-foreground mt-0.5">
-                            Tác giả: {s.user?.username || "Ẩn danh"}
+                            {t("admin.columnAuthor")}: {s.user?.username || t("common.anonymous")}
                           </p>
                         </div>
                         <span
@@ -356,7 +356,7 @@ export default function AdminDashboardPage() {
                               : "bg-muted text-muted-foreground border border-border"
                           }`}
                         >
-                          {s.isPublic ? "Công khai" : "Riêng tư"}
+                          {s.isPublic ? t("common.public") : t("common.private")}
                         </span>
                       </div>
                     ))}
@@ -371,15 +371,17 @@ export default function AdminDashboardPage() {
             <Card className="border border-border/80 shadow-xs">
               <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4">
                 <div>
-                  <CardTitle className="text-lg">Danh Sách Người Dùng</CardTitle>
+                  <CardTitle className="text-lg">{t("admin.tabUsers")}</CardTitle>
                   <CardDescription>
-                    Xem thông tin tài khoản, phân quyền và khóa/mở quyền truy cập
+                    {language === "vi" 
+                      ? "Xem thông tin tài khoản, phân quyền và khóa/mở quyền truy cập"
+                      : "View account details, roles, and manage access status"}
                   </CardDescription>
                 </div>
                 <div className="relative w-full sm:w-72">
                   <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
-                    placeholder="Tìm theo username, email..."
+                    placeholder={t("admin.searchUsersPlaceholder")}
                     value={userSearch}
                     onChange={(e) => setUserSearch(e.target.value)}
                     className="pl-9 bg-card"
@@ -391,25 +393,25 @@ export default function AdminDashboardPage() {
                   <table className="w-full text-left text-sm">
                     <thead className="bg-muted/60 text-muted-foreground font-semibold border-y border-border">
                       <tr>
-                        <th className="p-3 pl-6">Người Dùng</th>
-                        <th className="p-3">Vai Trò</th>
-                        <th className="p-3">Tiến Độ</th>
-                        <th className="p-3">Chuỗi Streak</th>
-                        <th className="p-3">Trạng Thái</th>
-                        <th className="p-3 pr-6 text-right">Thao Tác</th>
+                        <th className="p-3 pl-6">{t("admin.columnUser")}</th>
+                        <th className="p-3">{t("admin.columnRole")}</th>
+                        <th className="p-3">{t("admin.columnProgress")}</th>
+                        <th className="p-3">{t("admin.columnStreak")}</th>
+                        <th className="p-3">{t("admin.columnStatus")}</th>
+                        <th className="p-3 pr-6 text-right">{t("admin.columnActions")}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border/60">
                       {isUsersLoading ? (
                         <tr>
                           <td colSpan={6} className="text-center py-10 text-muted-foreground">
-                            Đang tải danh sách người dùng...
+                            {t("admin.loadingUsers")}
                           </td>
                         </tr>
                       ) : usersData?.users?.length === 0 ? (
                         <tr>
                           <td colSpan={6} className="text-center py-10 text-muted-foreground">
-                            Không tìm thấy người dùng nào.
+                            {t("admin.noUsersFound")}
                           </td>
                         </tr>
                       ) : (
@@ -450,7 +452,7 @@ export default function AdminDashboardPage() {
                             </td>
                             <td className="p-3">
                               <span className="font-semibold text-orange-600 dark:text-orange-400">
-                                🔥 {u.currentStreak || 0} ngày
+                                🔥 {u.currentStreak || 0} {t("dashboard.days")}
                               </span>
                             </td>
                             <td className="p-3">
@@ -463,11 +465,11 @@ export default function AdminDashboardPage() {
                               >
                                 {u.statusId === 1 ? (
                                   <>
-                                    <CheckCircle2 className="w-3 h-3" /> Hoạt động
+                                    <CheckCircle2 className="w-3 h-3" /> {t("common.active")}
                                   </>
                                 ) : (
                                   <>
-                                    <XCircle className="w-3 h-3" /> Đã khóa
+                                    <XCircle className="w-3 h-3" /> {t("common.locked")}
                                   </>
                                 )}
                               </span>
@@ -487,11 +489,11 @@ export default function AdminDashboardPage() {
                                 >
                                   {u.statusId === 1 ? (
                                     <>
-                                      <Lock className="w-3.5 h-3.5" /> Khóa
+                                      <Lock className="w-3.5 h-3.5" /> {t("common.lock")}
                                     </>
                                   ) : (
                                     <>
-                                      <Unlock className="w-3.5 h-3.5" /> Mở khóa
+                                      <Unlock className="w-3.5 h-3.5" /> {t("common.unlock")}
                                     </>
                                   )}
                                 </Button>
@@ -512,15 +514,17 @@ export default function AdminDashboardPage() {
             <Card className="border border-border/80 shadow-xs">
               <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4">
                 <div>
-                  <CardTitle className="text-lg">Quản Lý Bộ Thẻ Flashcard</CardTitle>
+                  <CardTitle className="text-lg">{t("admin.tabSets")}</CardTitle>
                   <CardDescription>
-                    Toàn bộ thẻ học trên hệ thống — Bấm vào link để xem và kiểm tra nội dung
+                    {language === "vi" 
+                      ? "Toàn bộ thẻ học trên hệ thống — Bấm vào link để xem và kiểm tra nội dung"
+                      : "All flashcard sets on the platform — Click title link to view and inspect"}
                   </CardDescription>
                 </div>
                 <div className="relative w-full sm:w-72">
                   <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
-                    placeholder="Tìm theo tiêu đề bộ thẻ..."
+                    placeholder={t("admin.searchSetsPlaceholder")}
                     value={setSearch}
                     onChange={(e) => setSetSearch(e.target.value)}
                     className="pl-9 bg-card"
@@ -532,31 +536,30 @@ export default function AdminDashboardPage() {
                   <table className="w-full text-left text-sm">
                     <thead className="bg-muted/60 text-muted-foreground font-semibold border-y border-border">
                       <tr>
-                        <th className="p-3 pl-6">Bộ Thẻ (Đính kèm Link)</th>
-                        <th className="p-3">Tác Giả</th>
-                        <th className="p-3">Số Thẻ</th>
-                        <th className="p-3">Trạng Thái</th>
-                        <th className="p-3">Ngày Tạo</th>
-                        <th className="p-3 pr-6 text-right">Hành Động</th>
+                        <th className="p-3 pl-6">{t("admin.columnTitle")}</th>
+                        <th className="p-3">{t("admin.columnAuthor")}</th>
+                        <th className="p-3">{t("admin.columnCardsCount")}</th>
+                        <th className="p-3">{t("admin.columnVisibility")}</th>
+                        <th className="p-3">{t("admin.columnCreatedAt")}</th>
+                        <th className="p-3 pr-6 text-right">{t("admin.columnActions")}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border/60">
                       {isSetsLoading ? (
                         <tr>
                           <td colSpan={6} className="text-center py-10 text-muted-foreground">
-                            Đang tải danh sách bộ thẻ...
+                            {t("admin.loadingSets")}
                           </td>
                         </tr>
                       ) : setsData?.sets?.length === 0 ? (
                         <tr>
                           <td colSpan={6} className="text-center py-10 text-muted-foreground">
-                            Không tìm thấy bộ thẻ nào.
+                            {t("admin.noSetsFound")}
                           </td>
                         </tr>
                       ) : (
                         setsData?.sets?.map((s: any) => (
                           <tr key={s.id} className="hover:bg-muted/30 transition-colors">
-                            {/* CỘT CÓ LINK TRỰC TIẾP VÀO BỘ THẺ */}
                             <td className="p-3 pl-6">
                               <Link
                                 href={`/set/${s.id}`}
@@ -578,7 +581,7 @@ export default function AdminDashboardPage() {
                                   {s.user?.username?.[0] || "A"}
                                 </div>
                                 <span className="font-medium text-xs text-foreground">
-                                  {s.user?.username || "Không rõ"}
+                                  {s.user?.username || t("common.anonymous")}
                                 </span>
                               </div>
                             </td>
@@ -586,7 +589,9 @@ export default function AdminDashboardPage() {
                               <span className="font-semibold text-foreground">
                                 {s.cardCount}
                               </span>{" "}
-                              <span className="text-xs text-muted-foreground">thẻ</span>
+                              <span className="text-xs text-muted-foreground">
+                                {language === "vi" ? "thẻ" : "cards"}
+                              </span>
                             </td>
                             <td className="p-3">
                               <span
@@ -596,15 +601,14 @@ export default function AdminDashboardPage() {
                                     : "bg-muted text-muted-foreground border-border"
                                 }`}
                               >
-                                {s.isPublic ? "Công khai" : "Riêng tư"}
+                                {s.isPublic ? t("common.public") : t("common.private")}
                               </span>
                             </td>
                             <td className="p-3 text-xs text-muted-foreground">
-                              {new Date(s.createdAt).toLocaleDateString("vi-VN")}
+                              {new Date(s.createdAt).toLocaleDateString(language === "vi" ? "vi-VN" : "en-US")}
                             </td>
                             <td className="p-3 pr-6 text-right">
                               <div className="flex items-center justify-end gap-2">
-                                {/* Nút xem bộ thẻ */}
                                 <Link href={`/set/${s.id}`} target="_blank">
                                   <Button
                                     variant="outline"
@@ -612,11 +616,10 @@ export default function AdminDashboardPage() {
                                     className="h-8 gap-1 text-xs border-border hover:bg-muted text-foreground"
                                   >
                                     <Eye className="w-3.5 h-3.5" />
-                                    Xem
+                                    {t("common.view")}
                                   </Button>
                                 </Link>
 
-                                {/* Nút xóa bộ thẻ */}
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -625,7 +628,7 @@ export default function AdminDashboardPage() {
                                   disabled={isDeletingSet}
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
-                                  Xóa
+                                  {t("common.delete")}
                                 </Button>
                               </div>
                             </td>
@@ -643,9 +646,11 @@ export default function AdminDashboardPage() {
           <TabsContent value="folders" className="space-y-4">
             <Card className="border border-border/80 shadow-xs">
               <CardHeader className="pb-4">
-                <CardTitle className="text-lg">Quản Lý Thư Mục Học Tập</CardTitle>
+                <CardTitle className="text-lg">{t("admin.tabFolders")}</CardTitle>
                 <CardDescription>
-                  Các thư mục phân loại bài học do người dùng khởi tạo
+                  {language === "vi"
+                    ? "Các thư mục phân loại bài học do người dùng khởi tạo"
+                    : "Study folders created by users to organize learning sets"}
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
@@ -653,22 +658,22 @@ export default function AdminDashboardPage() {
                   <table className="w-full text-left text-sm">
                     <thead className="bg-muted/60 text-muted-foreground font-semibold border-y border-border">
                       <tr>
-                        <th className="p-3 pl-6">Tên Thư Mục</th>
-                        <th className="p-3">Người Sở Hữu</th>
-                        <th className="p-3 pr-6">Ngày Tạo</th>
+                        <th className="p-3 pl-6">{t("admin.columnFolderName")}</th>
+                        <th className="p-3">{t("admin.columnAuthor")}</th>
+                        <th className="p-3 pr-6">{t("admin.columnCreatedAt")}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border/60">
                       {isFoldersLoading ? (
                         <tr>
                           <td colSpan={3} className="text-center py-10 text-muted-foreground">
-                            Đang tải danh sách thư mục...
+                            {t("admin.loadingFolders")}
                           </td>
                         </tr>
                       ) : foldersData?.folders?.length === 0 ? (
                         <tr>
                           <td colSpan={3} className="text-center py-10 text-muted-foreground">
-                            Chưa có thư mục nào.
+                            {t("admin.noFoldersFound")}
                           </td>
                         </tr>
                       ) : (
@@ -683,10 +688,10 @@ export default function AdminDashboardPage() {
                               </span>
                             </td>
                             <td className="p-3 text-xs text-muted-foreground">
-                              {f.user?.username || f.user?.email || "Không rõ"}
+                              {f.user?.username || f.user?.email || t("common.anonymous")}
                             </td>
                             <td className="p-3 pr-6 text-xs text-muted-foreground">
-                              {new Date(f.createdAt).toLocaleDateString("vi-VN")}
+                              {new Date(f.createdAt).toLocaleDateString(language === "vi" ? "vi-VN" : "en-US")}
                             </td>
                           </tr>
                         ))

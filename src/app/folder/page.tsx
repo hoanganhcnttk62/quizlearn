@@ -25,6 +25,7 @@ import {
 import { useCreateFolderMutation, useGetFoldersByUserIdQuery } from "../../../redux/features/folders/foldersApi";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { PageLayout } from "@/components/layout/PageLayout";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Folder {
   id: string;
@@ -45,6 +46,7 @@ const navigationItems = [
 ];
 
 export default function FolderPage() {
+  const { t, language } = useLanguage();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
   const [folders, setFolders] = useState<Folder[]>([]);
@@ -92,7 +94,7 @@ export default function FolderPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <h1 className="text-2xl font-semibold text-foreground">
-                    Folders
+                    {t("folder.title")}
                   </h1>
                 </div>
                 <div className="flex items-center gap-4">
@@ -150,7 +152,7 @@ export default function FolderPage() {
                           <div>
                             <h3 className="font-medium text-card-foreground">{folder.name}</h3>
                             <p className="text-sm text-muted-foreground">
-                              {folder?.totalSets || 0} sets
+                              {t("folder.setsCount", { count: folder?.totalSets || 0 })}
                             </p>
                           </div>
                         </div>

@@ -13,8 +13,10 @@ import { CheckCircle, XCircle, ArrowLeft, RefreshCw } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCreateOrResumeTestQuery, useFinishTestMutation } from "../../../../../redux/features/userSessions/userSessionsApi";
 import TestResults from "@/components/test/result";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function TestModePage() {
+  const { t, language } = useLanguage();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [userAnswers, setUserAnswers] = useState<UserAnswers>({});
@@ -162,11 +164,13 @@ export default function TestModePage() {
     if (question.type !== "write") return null;
     return (
       <div className="space-y-4 w-full">
-        <Label htmlFor={question.id}>Write the translation:</Label>
+        <Label htmlFor={question.id}>
+          {language === "vi" ? "Gõ định nghĩa / bản dịch tương ứng:" : "Write the translation:"}
+        </Label>
         <Input
           id={question.id}
           type="text"
-          placeholder="Type your answer here..."
+          placeholder={language === "vi" ? "Nhập câu trả lời của bạn..." : "Type your answer here..."}
           value={(userAnswers[question.id] as string) || ""}
           onChange={(e) => handleAnswerChange(question.id, e.target.value)}
         />
@@ -178,7 +182,9 @@ export default function TestModePage() {
     if (question.type !== "multi-choice") return null;
     return (
       <div className="space-y-4 w-full">
-        <Label>Choose the answer</Label>
+        <Label>
+          {language === "vi" ? "Chọn câu trả lời đúng:" : "Choose the answer"}
+        </Label>
         <RadioGroup
           value={(userAnswers[question.id] as string) || ""}
           onValueChange={(value) => handleAnswerChange(question.id, value)}
@@ -312,7 +318,7 @@ export default function TestModePage() {
                   disabled={!isComplete}
                   className="px-6"
                 >
-                  Submit Test
+                  {language === "vi" ? "Nộp bài kiểm tra" : "Submit Test"}
                 </Button>
               </div>
             </>

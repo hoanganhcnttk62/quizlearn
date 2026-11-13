@@ -29,10 +29,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { SpeakButton } from "@/components/common/SpeakButton";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 type Props = {};
 
 const page = (props: Props) => {
+  const { t, language } = useLanguage();
   const params = useParams();
   const id = params.id;
   const [createOrUpdateUserSession, { isLoading: isCreatingUserSession }] =
@@ -352,7 +354,7 @@ const page = (props: Props) => {
                     {cardResult.length > 0 && (
                       <div className="mb-6">
                         <h3 className="text-lg font-semibold mb-3">
-                          Completed Questions
+                          {language === "vi" ? "Các câu đã hoàn thành" : "Completed Questions"}
                         </h3>
                         <div className="space-y-3">
                           {cardResultsByRound &&
@@ -360,7 +362,7 @@ const page = (props: Props) => {
                             Object.entries(cardResultsByRound).map(
                               ([round, results], index) => (
                                 <div key={round}>
-                                  <h3>Round {parseInt(round)} Results:</h3>
+                                  <h3>{language === "vi" ? `Kết quả Vòng ${parseInt(round)}:` : `Round ${parseInt(round)} Results:`}</h3>
                                   <ul className="flex flex-col gap-2">
                                     {(results as any[]).map((result, i) => (
                                       <div
@@ -376,13 +378,13 @@ const page = (props: Props) => {
                                           <p className="font-medium text-lg text-black">
                                             {result.term}
                                           </p>
-                                          <SpeakButton text={result.term} size="sm" title="Nghe thuật ngữ" />
+                                          <SpeakButton text={result.term} size="sm" title={t("study.listenTerm")} />
                                         </div>
                                         <div className="flex items-center justify-between">
                                           <p className="text-gray-600">
                                             {result.definition}
                                           </p>
-                                          <SpeakButton text={result.definition} size="sm" title="Nghe định nghĩa" />
+                                          <SpeakButton text={result.definition} size="sm" title={t("study.listenDef")} />
                                         </div>
                                         <p
                                           className={cn(
@@ -393,8 +395,8 @@ const page = (props: Props) => {
                                           )}
                                         >
                                           {result.isCorrect
-                                            ? "Correct"
-                                            : "Incorrect"}
+                                            ? t("study.correct")
+                                            : t("study.incorrect")}
                                         </p>
                                       </div>
                                     ))}
@@ -403,54 +405,22 @@ const page = (props: Props) => {
                               )
                             )
                           ) : (
-                            <div>No results yet.</div>
+                            <div>{language === "vi" ? "Chưa có kết quả." : "No results yet."}</div>
                           )}
-                          {/* {cardResult.map((card: any) => {
-                            // const result = learningProgress[cards.findIndex(c => c.id === card.id)];
-                            return (
-
-                              <div
-                                key={card.id}
-                                className={cn(
-                                  "p-4 rounded-lg",
-                                  card.isCorrect
-                                    ? "bg-green-50 border border-green-200"
-                                    : "bg-red-50 border border-red-200"
-                                )}
-                              >
-                                <p className="font-medium">{card.term}</p>
-                                <p className="text-gray-600">
-                                  {card.definition}
-                                </p>
-                                <p
-                                  className={cn(
-                                    "mt-2 text-sm",
-                                    card.isCorrect
-                                      ? "text-green-600"
-                                      : "text-red-600"
-                                  )}
-                                >
-                                  {card.isCorrect
-                                    ? "Correct"
-                                    : "Incorrect"}
-                                </p>
-                              </div>
-                            );
-                          })} */}
                         </div>
                       </div>
                     )}
 
                     {isSessionCompleted ? (
                       <Button className="w-full mt-6" onClick={handleStartOver}>
-                        Start Over
+                        {t("study.startOver")}
                       </Button>
                     ) : (
                       <Button
                         className="w-full mt-6"
                         onClick={resetRemaingCards}
                       >
-                        Continue
+                        {language === "vi" ? "Tiếp tục học" : "Continue"}
                       </Button>
                     )}
                   </Card>
@@ -459,16 +429,10 @@ const page = (props: Props) => {
                 <Card className="w-full max-w-2xl p-6">
                   <div className="flex justify-between items-center mb-6">
                     <h3 className="text-lg font-semibold">
-                      Question {currentCardIndex + 1} of {totalCardsInSession}
+                      {language === "vi" 
+                        ? `Câu hỏi ${currentCardIndex + 1} / ${totalCardsInSession}`
+                        : `Question ${currentCardIndex + 1} of ${totalCardsInSession}`}
                     </h3>
-                    {/* <div className="text-sm text-gray-500">
-                                                {
-                                                    Object.values(learningProgress).filter(
-                                                        (p) => p === "correct"
-                                                    ).length
-                                                }{" "}
-                                                correct
-                                            </div> */}
                   </div>
 
                   <div className="flex items-center gap-3 mb-6">
@@ -560,13 +524,13 @@ const page = (props: Props) => {
                         disabled={!selectedAnswer || isLoadingAnswerChoices}
                         onClick={handleMultipleChoiceSubmit}
                       >
-                        Submit Answer
+                        {language === "vi" ? "Gửi câu trả lời" : "Submit Answer"}
                       </Button>
                     ) : (
                       <Button onClick={handleNextQuestion}>
                         {currentCardIndex < cards?.length - 1
-                          ? "Next Question"
-                          : "See Results"}
+                          ? (language === "vi" ? "Câu tiếp theo" : "Next Question")
+                          : (language === "vi" ? "Xem kết quả" : "See Results")}
                       </Button>
                     )}
                   </div>

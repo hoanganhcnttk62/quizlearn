@@ -19,8 +19,11 @@ import {
 import { useLoginMutation } from "../../../../redux/features/auth/authApi";
 import { useLoadUserQuery } from "../../../../redux/features/api/apiSlice";
 import { useSelector } from "react-redux";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { LanguageToggle } from "@/components/LanguageToggle";
 
 export default function LoginPage() {
+  const { t, language } = useLanguage();
   const router = useRouter();
   const [login, { isError, data, isSuccess, error }] = useLoginMutation();
   const { user } = useSelector((state: any) => state.auth);
@@ -65,7 +68,12 @@ export default function LoginPage() {
   }, [isSuccess, isError]);
   // Handle click outside modal
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-primary-100 to-primary-200 dark:bg-black">
+    <div className="min-h-screen relative flex flex-col items-center justify-center bg-gradient-to-b from-primary-100 to-primary-200 dark:bg-black">
+      {/* Top right language switcher */}
+      <div className="absolute top-4 right-4 z-20">
+        <LanguageToggle variant="pill" />
+      </div>
+
       <Suspense fallback={null}>
         <SearchParamsHandler />
       </Suspense>
@@ -76,17 +84,17 @@ export default function LoginPage() {
             QuizLearn
           </h1>
           <p className="text-primary-700 dark:text-zinc-400">
-            Your Learning Journey Starts Here
+            {language === "vi" ? "Khởi đầu hành trình học tập thông minh" : "Your Learning Journey Starts Here"}
           </p>
         </div>
 
         <Card className="w-full backdrop-blur-sm bg-white/90 dark:bg-zinc-900/90 shadow-custom dark:border-zinc-800">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center text-primary-800 dark:text-white">
-              Welcome back
+              {t("auth.welcomeTitle")}
             </CardTitle>
             <CardDescription className="text-center text-primary-600 dark:text-zinc-400">
-              Sign in to your account to continue
+              {t("auth.signInSubtitle")}
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
@@ -96,13 +104,13 @@ export default function LoginPage() {
                   htmlFor="email"
                   className="text-primary-700 dark:text-zinc-300"
                 >
-                  Email
+                  {t("auth.emailLabel")}
                 </Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="name@example.com"
+                  placeholder={t("auth.emailPlaceholder")}
                   required
                   autoComplete="email"
                   className="border-primary-200 focus:border-primary-500 focus:ring-primary-500 dark:bg-zinc-800 dark:border-zinc-700 dark:focus:border-zinc-600 dark:focus:ring-zinc-600 dark:text-white dark:placeholder:text-zinc-500"
@@ -113,7 +121,7 @@ export default function LoginPage() {
                   htmlFor="password"
                   className="text-primary-700 dark:text-zinc-300"
                 >
-                  Password
+                  {t("auth.passwordLabel")}
                 </Label>
                 <Input
                   id="password"
@@ -130,17 +138,17 @@ export default function LoginPage() {
                 type="submit"
                 className="w-full bg-primary-600 hover:bg-primary-700 border border-input text-dark dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-black transition-colors"
               >
-                Sign in
+                {t("auth.signInButton")}
               </Button>
               <SocialLogin />
               <div className="text-sm text-center space-y-2">
                 <div className="text-primary-600 dark:text-zinc-400">
-                  Don't have an account?{" "}
+                  {t("auth.noAccount")}{" "}
                   <Link
                     href="/register"
                     className="text-primary-700 hover:text-primary-800 dark:text-zinc-300 dark:hover:text-white font-semibold hover:underline"
                   >
-                    Create one
+                    {t("auth.createOne")}
                   </Link>
                 </div>
                 <div>
@@ -148,7 +156,7 @@ export default function LoginPage() {
                     href="/forgot-password"
                     className="text-primary-600 hover:text-primary-700 dark:text-zinc-400 dark:hover:text-zinc-300"
                   >
-                    Forgot your password?
+                    {t("auth.forgotPassword")}
                   </Link>
                 </div>
               </div>
