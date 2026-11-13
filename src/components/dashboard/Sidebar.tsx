@@ -4,18 +4,8 @@ import { LayoutGrid, Store, Box, Users, Settings, HelpCircle, ChevronLeft, Folde
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
-
-const mainMenuItems = [
-  { name: "Overview", icon: LayoutGrid, href: "/dashboard" },
-  { name: "Folder", icon: Folder, href: "/folder" },
-  { name: "Explore", icon: Box, href: "/explore" },
-  { name: "AI", icon: Users, href: "/ai" },
-];
-
-const otherMenuItems = [
-  { name: "Setting", icon: Settings, href: "/settings" },
-  { name: "Help Center", icon: HelpCircle, href: "/help" },
-];
+import { useLanguage } from "@/i18n/LanguageContext";
+import { LanguageToggle } from "@/components/LanguageToggle";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -24,20 +14,33 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const pathName = usePathname();
+  const { t } = useLanguage();
   const { user } = useSelector((state: any) => state.auth);
   const isAdmin =
     user?.role?.name?.toLowerCase() === "admin" ||
     user?.roleId === "3dd54a71-c0f5-4142-a1ff-ec9b08e91dbb";
 
+  const mainMenuItems = [
+    { name: t("nav.overview"), icon: LayoutGrid, href: "/dashboard" },
+    { name: t("nav.folder"), icon: Folder, href: "/folder" },
+    { name: t("nav.explore"), icon: Box, href: "/explore" },
+    { name: t("nav.ai"), icon: Users, href: "/ai" },
+  ];
+
+  const otherMenuItems = [
+    { name: t("nav.settings"), icon: Settings, href: "/settings" },
+    { name: t("nav.helpCenter"), icon: HelpCircle, href: "/help" },
+  ];
+
   // Cập nhật `current` cho mỗi item dựa trên pathname hiện tại
   const updatedMainMenuItems = mainMenuItems.map((item) => ({
     ...item,
-    current: pathName === item.href, // so sánh đường dẫn hiện tại với href của item
+    current: pathName === item.href,
   }));
 
   const updatedOtherMenuItems = otherMenuItems.map((item) => ({
     ...item,
-    current: pathName === item.href, // tương tự cho mục khác
+    current: pathName === item.href,
   }));
 
   return (
@@ -79,7 +82,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             <div className="mb-4">
               {isOpen && (
                 <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 px-4 mb-2 tracking-wider">
-                  QUẢN TRỊ VIÊN
+                  {t("nav.adminBadge")}
                 </p>
               )}
               <nav className="space-y-1">
@@ -92,10 +95,10 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                       : "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40",
                     !isOpen && "justify-center px-2"
                   )}
-                  title={!isOpen ? "Admin Portal" : undefined}
+                  title={!isOpen ? t("nav.adminPortal") : undefined}
                 >
                   <ShieldCheck className="w-5 h-5" />
-                  {isOpen && "Admin Dashboard"}
+                  {isOpen && t("nav.adminDashboard")}
                 </Link>
               </nav>
             </div>
@@ -150,8 +153,19 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         </div>
       </div>
 
-      {/* User Profile */}
-      <div className="p-4 border-t border-border">
+      {/* Language Switcher & Collapse */}
+      <div className="p-3 border-t border-border space-y-2">
+        {isOpen ? (
+          <div className="flex items-center justify-between px-1">
+            <span className="text-xs text-muted-foreground font-medium">{t("header.language")}</span>
+            <LanguageToggle variant="pill" />
+          </div>
+        ) : (
+          <div className="flex justify-center">
+            <LanguageToggle variant="button" />
+          </div>
+        )}
+
         <button
           onClick={onToggle}
           className={cn(

@@ -8,6 +8,7 @@ import ErrorBoundary from "@/hooks/errorBoundary";
 import { useLoadUserQuery } from "../../redux/features/api/apiSlice";
 import AuthProvider from "@/providers/AuthProvider";
 import { SessionProvider } from "next-auth/react";
+import { LanguageProvider } from "@/i18n/LanguageContext";
 
 export default function ClientLayout({
   children,
@@ -23,10 +24,12 @@ export default function ClientLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>
-            <Custom>{children}</Custom>
-          </AuthProvider>
-          <Toaster />
+          <LanguageProvider>
+            <AuthProvider>
+              <Custom>{children}</Custom>
+            </AuthProvider>
+            <Toaster />
+          </LanguageProvider>
         </ThemeProvider>
       </SessionProvider>
     </ReduxProvider>

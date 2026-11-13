@@ -15,6 +15,7 @@ import { PageLayout } from "@/components/layout/PageLayout";
 import { useSelector } from "react-redux";
 import { useGetRecentSetsQuery, useGetStudyingSetsQuery, useGetUserStreakQuery } from "../../../redux/features/userStats/userStatisticsApi";
 import { Calendar } from "@/components/ui/calendar";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const navigationItems = [
   { name: "Dashboard", href: "/dashboard", current: true },
@@ -27,6 +28,7 @@ const navigationItems = [
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState("studying");
   const { user } = useSelector((state: any) => state.auth);
   const { data: studyingSets, isLoading: isStudyingSetsLoading, isError: isStudyingSetsError } = useGetStudyingSetsQuery({});
@@ -132,8 +134,8 @@ export default function DashboardPage() {
                 <Card className="p-6 col-span-1">
                   <Tabs defaultValue="studying" className="w-full">
                     <TabsList className="grid w-full grid-cols-2 mb-6">
-                      <TabsTrigger value="studying">Studying</TabsTrigger>
-                      <TabsTrigger value="recent">Recent</TabsTrigger>
+                      <TabsTrigger value="studying">{language === "vi" ? "Đang học" : "Studying"}</TabsTrigger>
+                      <TabsTrigger value="recent">{language === "vi" ? "Gần đây" : "Recent"}</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="studying" className="space-y-4">
@@ -149,11 +151,11 @@ export default function DashboardPage() {
                             </div>
                             <div>
                               <h3 className="font-medium">{list.set.title}</h3>
-                              <p className="text-sm text-gray-500">Studied {formatDate(list.createdAt)}</p>
+                              <p className="text-sm text-gray-500">{language === "vi" ? "Đã học" : "Studied"} {formatDate(list.createdAt)}</p>
                             </div>
                           </div>
-                          <Button variant="outline" size="sm" className="rounded-full">
-                            Resume
+                          <Button variant="outline" size="sm" className="rounded-full" onClick={() => router.push(`/set/${list.set?.id || list.setId}`)}>
+                            {language === "vi" ? "Tiếp tục" : "Resume"}
                           </Button>
                         </div>
                       ))}
@@ -172,11 +174,11 @@ export default function DashboardPage() {
                             </div>
                             <div>
                               <h3 className="font-medium">{list?.set?.title}</h3>
-                              <p className="text-sm text-gray-500">Studied {formatDate(list.createdAt)} </p>
+                              <p className="text-sm text-gray-500">{language === "vi" ? "Đã học" : "Studied"} {formatDate(list.createdAt)} </p>
                             </div>
                           </div>
-                          <Button variant="outline" size="sm" className="rounded-full">
-                            Learn again
+                          <Button variant="outline" size="sm" className="rounded-full" onClick={() => router.push(`/set/${list?.set?.id || list.setId}`)}>
+                            {language === "vi" ? "Học lại" : "Learn again"}
                           </Button>
                         </div>
                       ))}                    </TabsContent>

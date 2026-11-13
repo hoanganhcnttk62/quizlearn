@@ -10,20 +10,24 @@ import { Label } from "@/components/ui/label";
 import Protected from "@/hooks/useProtected";
 import { cn } from "@/lib/utils";
 import { PageLayout } from "@/components/layout/PageLayout";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { LanguageToggle } from "@/components/LanguageToggle";
+
 export default function SettingsPage() {
+  const { t, language, setLanguage } = useLanguage();
   return (
     <Protected>
       <PageLayout>
         <div className="min-h-screen bg-background">
 
           <main className="container max-w-4xl pt-8 pb-16">
-            <h1 className="text-3xl font-bold mb-6">Settings</h1>
+            <h1 className="text-3xl font-bold mb-6">{t("settings.title")}</h1>
 
             <Tabs defaultValue="account" className="w-full">
               <TabsList className="mb-6">
-                <TabsTrigger value="account">Account</TabsTrigger>
-                <TabsTrigger value="appearance">Appearance</TabsTrigger>
-                <TabsTrigger value="notifications">Notifications</TabsTrigger>
+                <TabsTrigger value="account">{t("settings.account")}</TabsTrigger>
+                <TabsTrigger value="appearance">{t("settings.appearance")}</TabsTrigger>
+                <TabsTrigger value="notifications">{t("header.notificationsTitle")}</TabsTrigger>
                 <TabsTrigger value="privacy">Privacy</TabsTrigger>
               </TabsList>
 
@@ -58,16 +62,32 @@ export default function SettingsPage() {
               <TabsContent value="appearance">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Appearance</CardTitle>
+                    <CardTitle>{t("settings.appearance")}</CardTitle>
                     <CardDescription>
-                      Customize how the app looks and feels.
+                      {language === "vi" 
+                        ? "Tùy chỉnh giao diện hiển thị và ngôn ngữ hệ thống." 
+                        : "Customize how the app looks and choose your display language."}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-6">
                     <div className="space-y-2">
-                      <Label>Theme</Label>
-                      <div className="p-2 border rounded-md">
+                      <Label>{t("settings.theme")}</Label>
+                      <div className="p-3 border rounded-md flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                          {language === "vi" ? "Chuyển đổi giao diện Sáng / Tối" : "Switch between Light and Dark mode"}
+                        </span>
                         <ThemeToggle />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>{t("settings.language")}</Label>
+                      <p className="text-xs text-muted-foreground">{t("settings.languageDesc")}</p>
+                      <div className="p-3 border rounded-md flex items-center justify-between">
+                        <span className="text-sm font-medium">
+                          {language === "vi" ? "Tiếng Việt (Mặc định)" : "English (Default)"}
+                        </span>
+                        <LanguageToggle variant="pill" />
                       </div>
                     </div>
                   </CardContent>

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,11 +16,22 @@ import {
   ImageIcon,
   CheckCircle,
   XCircle,
-  MenuIcon
+  MenuIcon,
+  Sparkles,
+  Loader2,
+  AlertCircle,
+  Check
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Protected from "@/hooks/useProtected";
 import { Sidebar } from "@/components/dashboard/Sidebar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { 
   useGetAllSetsQuery,
   useUpdateSetMutation 
@@ -31,7 +42,9 @@ import {
   useCreateCardMutation
 } from "../../../../../redux/features/cards/cardsApi";
 import { useSearchImageMutation } from "../../../../../redux/features/image/imageApi";
+import { useProofreadCardsMutation, useCheckSingleTermMutation } from "../../../../../redux/features/ai/aiApi";
 import { useSelector } from "react-redux";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 // Card type definition
 interface Card {
@@ -94,6 +107,7 @@ const ImageCarousel = ({
 };
 
 export default function UpdateSetPage() {
+  const { t, language } = useLanguage();
   const params = useParams();
   const setId = params.id as string;
   const router = useRouter();
@@ -118,6 +132,27 @@ export default function UpdateSetPage() {
   const [imageSearchQuery, setImageSearchQuery] = useState("");
   const [imageSearchResults, setImageSearchResults] = useState<ImageResult[]>([]);
   const [isSearchingImages, setIsSearchingImages] = useState(false);
+
+  // States for AI proofreading & auto-check
+  const [proofreadCards, { isLoading: isProofreading }] = useProofreadCardsMutation();
+  const [checkSingleTerm] = useCheckSingleTermMutation();
+  const [proofreadIssues, setProofreadIssues] = useState<any[]>([]);
+  const [isProofreadDialogOpen, setIsProofreadDialogOpen] = useState(false);
+  const [inlineSuggestions, setInlineSuggestions] = useState<
+    Record<
+      number,
+      {
+        suggestedTerm?: string;
+        suggestedDefinition?: string;
+        issueType?: "typo" | "grammar" | "mismatch" | "none";
+        message: string;
+        isChecking?: boolean;
+      }
+    >
+  >({});
+  const typingTimeouts = useRef<Record<number, any>>({});
+  const lastCheckedValues = useRef<Record<number, string>>({});
+  const isCheckingRef = useRef<Record<number, boolean>>({});
   
   // API hooks
   const { data: allSetsData, isLoading: isLoadingSets } = useGetAllSetsQuery({});
@@ -186,11 +221,214 @@ export default function UpdateSetPage() {
     setTerms(updatedTerms);
     
     // Track modified cards
-    setModifiedCards(prev => {
-      const newSet = new Set(prev);
-      newSet.add(updatedTerms[index].id);
-      return newSet;
+    if (updatedTerms[index].id) {
+      setModifiedCards(prev => {
+        const newSet = new Set(prev);
+        newSet.add(updatedTerms[index].id);
+        return newSet;
+      });
+    }
+
+    // Tự động kiểm tra chính tả/định nghĩa sau 1.2s ngừng gõ
+    if (typingTimeouts.current[index]) {
+      clearTimeout(typingTimeouts.current[index]);
+    }
+    typingTimeouts.current[index] = setTimeout(() => {
+      handleAutoCheckTerm(
+        index,
+        field === "term" ? value : updatedTerms[index].term,
+        field === "definition" ? value : updatedTerms[index].definition
+      );
+    }, 1200);
+  };
+
+  const handleAutoCheckTerm = async (index: number, termValue?: string, defValue?: string) => {
+    if (typingTimeouts.current[index]) {
+      clearTimeout(typingTimeouts.current[index]);
+      delete typingTimeouts.current[index];
+    }
+
+    const termToCheck = (termValue !== undefined ? termValue : terms[index]?.term || "").trim();
+    const defToCheck = (defValue !== undefined ? defValue : terms[index]?.definition || "").trim();
+
+    if ((!termToCheck || termToCheck.length < 2) && (!defToCheck || defToCheck.length < 2)) {
+      delete lastCheckedValues.current[index];
+      setInlineSuggestions((prev) => {
+        const copy = { ...prev };
+        delete copy[index];
+        return copy;
+      });
+      return;
+    }
+
+    const cacheKey = `${termToCheck.toLowerCase()}:::${defToCheck.toLowerCase()}`;
+    if (lastCheckedValues.current[index] === cacheKey) {
+      return;
+    }
+
+    if (isCheckingRef.current[index]) {
+      return;
+    }
+
+    try {
+      isCheckingRef.current[index] = true;
+      setInlineSuggestions((prev) => ({
+        ...prev,
+        [index]: { ...prev[index], message: "", isChecking: true },
+      }));
+
+      const res = await checkSingleTerm({
+        term: termToCheck,
+        definition: defToCheck,
+      }).unwrap();
+
+      lastCheckedValues.current[index] = cacheKey;
+
+      const data = res.data;
+      const termHasDiff = data?.suggestedTerm && termToCheck.length > 0 && data.suggestedTerm.toLowerCase() !== termToCheck.toLowerCase();
+      const defHasDiff = data?.suggestedDefinition && defToCheck.length > 0 && data.suggestedDefinition.toLowerCase() !== defToCheck.toLowerCase();
+
+      if (data && data.hasError && (termHasDiff || defHasDiff || data.issueType === "mismatch")) {
+        setInlineSuggestions((prev) => ({
+          ...prev,
+          [index]: {
+            suggestedTerm: termHasDiff ? data.suggestedTerm : undefined,
+            suggestedDefinition: (defHasDiff || data.issueType === "mismatch") ? data.suggestedDefinition : undefined,
+            issueType: data.issueType || "typo",
+            message: data.message || "Phát hiện vấn đề cần chỉnh sửa",
+            isChecking: false,
+          },
+        }));
+      } else {
+        setInlineSuggestions((prev) => {
+          const copy = { ...prev };
+          delete copy[index];
+          return copy;
+        });
+      }
+    } catch (err) {
+      console.error("Auto check term error:", err);
+      setInlineSuggestions((prev) => {
+        const copy = { ...prev };
+        delete copy[index];
+        return copy;
+      });
+    } finally {
+      isCheckingRef.current[index] = false;
+    }
+  };
+
+  const handleApplyInlineFix = (index: number, field: "term" | "definition", correctedValue: string) => {
+    if (typingTimeouts.current[index]) {
+      clearTimeout(typingTimeouts.current[index]);
+      delete typingTimeouts.current[index];
+    }
+
+    const updatedTerms = [...terms];
+    updatedTerms[index] = { ...updatedTerms[index], [field]: correctedValue };
+    setTerms(updatedTerms);
+
+    if (updatedTerms[index].id) {
+      setModifiedCards((prev) => {
+        const newSet = new Set(prev);
+        newSet.add(updatedTerms[index].id);
+        return newSet;
+      });
+    }
+
+    const finalTerm = (field === "term" ? correctedValue : updatedTerms[index].term || "").trim().toLowerCase();
+    const finalDef = (field === "definition" ? correctedValue : updatedTerms[index].definition || "").trim().toLowerCase();
+    lastCheckedValues.current[index] = `${finalTerm}:::${finalDef}`;
+
+    setInlineSuggestions((prev) => {
+      const updated = { ...prev };
+      if (updated[index]) {
+        if (field === "term") delete updated[index].suggestedTerm;
+        if (field === "definition") delete updated[index].suggestedDefinition;
+        if (!updated[index].suggestedTerm && !updated[index].suggestedDefinition) {
+          delete updated[index];
+        }
+      }
+      return updated;
     });
+
+    toast.success(`Đã áp dụng gợi ý: "${correctedValue}"`);
+  };
+
+  const handleProofreadWithAI = async () => {
+    const validTerms = terms
+      .map((t, idx) => ({ id: t.id || `temp-${idx}`, term: (t.term || "").trim(), definition: (t.definition || "").trim(), originalIndex: idx }))
+      .filter((t) => t.term.length > 0 || t.definition.length > 0);
+
+    if (validTerms.length === 0) {
+      toast.error("Vui lòng nhập ít nhất một thuật ngữ hoặc định nghĩa trước khi kiểm tra lỗi.");
+      return;
+    }
+
+    try {
+      const res = await proofreadCards({
+        cards: validTerms.map((t) => ({ id: t.id, term: t.term, definition: t.definition })),
+      }).unwrap();
+
+      const issues = res.issues || [];
+      if (issues.length === 0) {
+        toast.success("Rất tốt! AI không phát hiện lỗi chính tả hay ngữ pháp nào trong các thẻ.");
+      } else {
+        const mappedIssues = issues.map((iss) => {
+          const matched = validTerms.find((vt) => vt.id === iss.cardId);
+          return {
+            ...iss,
+            originalIndex: matched ? matched.originalIndex : 0,
+          };
+        });
+        setProofreadIssues(mappedIssues);
+        setIsProofreadDialogOpen(true);
+      }
+    } catch (err: any) {
+      console.error("AI proofread error:", err);
+      toast.error(err?.data?.message || "Không thể gọi AI kiểm tra lúc này.");
+    }
+  };
+
+  const handleApplySingleFix = (issue: any) => {
+    setTerms((prev) => {
+      const updated = [...prev];
+      if (issue.originalIndex >= 0 && issue.originalIndex < updated.length) {
+        if (issue.suggestedTerm) updated[issue.originalIndex].term = issue.suggestedTerm;
+        if (issue.suggestedDefinition) updated[issue.originalIndex].definition = issue.suggestedDefinition;
+        if (updated[issue.originalIndex].id) {
+          setModifiedCards((m) => new Set(m).add(updated[issue.originalIndex].id));
+        }
+      }
+      return updated;
+    });
+    const finalTerm = (issue.suggestedTerm || terms[issue.originalIndex]?.term || "").trim().toLowerCase();
+    const finalDef = (issue.suggestedDefinition || terms[issue.originalIndex]?.definition || "").trim().toLowerCase();
+    lastCheckedValues.current[issue.originalIndex] = `${finalTerm}:::${finalDef}`;
+    setProofreadIssues((prev) => prev.filter((item) => item.cardId !== issue.cardId));
+    toast.success("Đã áp dụng sửa đổi cho thẻ!");
+  };
+
+  const handleApplyAllFixes = () => {
+    setTerms((prev) => {
+      const updated = [...prev];
+      proofreadIssues.forEach((issue) => {
+        if (issue.originalIndex >= 0 && issue.originalIndex < updated.length) {
+          if (issue.suggestedTerm) updated[issue.originalIndex].term = issue.suggestedTerm;
+          if (issue.suggestedDefinition) updated[issue.originalIndex].definition = issue.suggestedDefinition;
+          if (updated[issue.originalIndex].id) {
+            setModifiedCards((m) => new Set(m).add(updated[issue.originalIndex].id));
+          }
+          const finalTerm = (issue.suggestedTerm || updated[issue.originalIndex]?.term || "").trim().toLowerCase();
+          const finalDef = (issue.suggestedDefinition || updated[issue.originalIndex]?.definition || "").trim().toLowerCase();
+          lastCheckedValues.current[issue.originalIndex] = `${finalTerm}:::${finalDef}`;
+        }
+      });
+      return updated;
+    });
+    setProofreadIssues([]);
+    setIsProofreadDialogOpen(false);
+    toast.success("Đã áp dụng tất cả gợi ý sửa từ AI!");
   };
   
   const handleSaveAllChanges = async () => {
@@ -514,7 +752,23 @@ export default function UpdateSetPage() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <h2 className="text-lg font-medium">Terms ({terms.length})</h2>
-                    <Button onClick={handleAddTerm}>Add Term</Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleProofreadWithAI}
+                        disabled={isProofreading}
+                        className="flex items-center gap-1.5 text-blue-600 border-blue-200 bg-blue-50/50 hover:bg-blue-100"
+                      >
+                        {isProofreading ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Sparkles className="w-4 h-4" />
+                        )}
+                        {language === "vi" ? "Rà soát bằng AI" : "AI Proofread"}
+                      </Button>
+                      <Button onClick={handleAddTerm}>Add Term</Button>
+                    </div>
                   </div>
 
                   {terms.length === 0 ? (
@@ -544,21 +798,76 @@ export default function UpdateSetPage() {
                       
                         <div className="grid md:grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                              Term
-                            </label>
+                            <div className="flex justify-between items-center mb-1">
+                              <label className="block text-sm font-medium text-gray-700">
+                                Term
+                              </label>
+                              {inlineSuggestions[index]?.isChecking && (
+                                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <Loader2 className="h-3 w-3 animate-spin text-blue-600" />
+                                  AI đang kiểm tra...
+                                </span>
+                              )}
+                            </div>
                             <Input
                               placeholder="Enter term"
                               value={term.term}
                               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                 handleTermChange(index, "term", e.target.value)
                               }
+                              onBlur={() => handleAutoCheckTerm(index)}
                             />
+
+                            {/* AI Inline Typo Suggestion */}
+                            {inlineSuggestions[index]?.suggestedTerm && !inlineSuggestions[index]?.isChecking && (
+                              <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-md text-xs flex items-center justify-between text-amber-900 shadow-xs animate-in fade-in">
+                                <div className="flex items-center gap-1.5 flex-1 min-w-0 pr-2">
+                                  <Sparkles className="h-3.5 w-3.5 text-amber-600 flex-shrink-0" />
+                                  <span className="truncate">
+                                    Có phải là:{" "}
+                                    <strong className="underline decoration-amber-500 font-bold text-amber-950">
+                                      {inlineSuggestions[index].suggestedTerm}
+                                    </strong>
+                                    ?
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1 flex-shrink-0">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const corrected = inlineSuggestions[index].suggestedTerm;
+                                      if (corrected) {
+                                        handleApplyInlineFix(index, "term", corrected);
+                                      }
+                                    }}
+                                    className="px-2 py-0.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded text-[11px] transition-colors"
+                                  >
+                                    {language === "vi" ? "Sửa ngay" : "Fix now"}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setInlineSuggestions((prev) => {
+                                        const updated = { ...prev };
+                                        delete updated[index];
+                                        return updated;
+                                      });
+                                    }}
+                                    className="px-1.5 py-0.5 text-gray-400 hover:text-gray-600 rounded text-xs"
+                                    title="Bỏ qua"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              </div>
+                            )}
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                              Definition
-                            </label>
+                            <div className="flex justify-between items-center mb-1">
+                              <label className="block text-sm font-medium text-gray-700">
+                                Definition
+                              </label>
+                            </div>
                             <Input
                               placeholder="Enter definition"
                               value={term.definition}
@@ -569,7 +878,52 @@ export default function UpdateSetPage() {
                                   e.target.value
                                 )
                               }
+                              onBlur={() => handleAutoCheckTerm(index)}
                             />
+
+                            {/* AI Inline Definition Suggestion */}
+                            {inlineSuggestions[index]?.suggestedDefinition && !inlineSuggestions[index]?.isChecking && (
+                              <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-md text-xs flex items-center justify-between text-blue-900 shadow-xs animate-in fade-in">
+                                <div className="flex items-center gap-1.5 flex-1 min-w-0 pr-2">
+                                  <Sparkles className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" />
+                                  <span className="truncate">
+                                    {inlineSuggestions[index].issueType === "mismatch" ? "Định nghĩa chuẩn: " : "Gợi ý sửa: "}
+                                    <strong className="underline decoration-blue-500 font-bold text-blue-950">
+                                      {inlineSuggestions[index].suggestedDefinition}
+                                    </strong>
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1 flex-shrink-0">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const corrected = inlineSuggestions[index].suggestedDefinition!;
+                                      handleApplyInlineFix(index, "definition", corrected);
+                                    }}
+                                    className="px-2 py-0.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded text-[11px] transition-colors"
+                                  >
+                                    {language === "vi" ? "Sửa ngay" : "Fix now"}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setInlineSuggestions((prev) => {
+                                        const updated = { ...prev };
+                                        if (updated[index]) {
+                                          delete updated[index].suggestedDefinition;
+                                          if (!updated[index].suggestedTerm) delete updated[index];
+                                        }
+                                        return updated;
+                                      });
+                                    }}
+                                    className="px-1.5 py-0.5 text-gray-400 hover:text-gray-600 rounded text-xs"
+                                    title="Bỏ qua"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                         
@@ -694,6 +1048,85 @@ export default function UpdateSetPage() {
             </div>
           </div>
         </main>
+
+        {/* Dialog hiển thị kết quả rà soát AI */}
+        <Dialog open={isProofreadDialogOpen} onOpenChange={setIsProofreadDialogOpen}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-indigo-900">
+                <Sparkles className="h-5 w-5 text-indigo-600" />
+                Kết quả rà soát thẻ từ Gemini AI
+              </DialogTitle>
+              <DialogDescription>
+                AI đã phát hiện {proofreadIssues.length} vấn đề cần chú ý (chính tả, ngữ pháp hoặc định nghĩa chưa khớp).
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-3">
+              {proofreadIssues.map((issue, idx) => (
+                <div
+                  key={idx}
+                  className="p-3.5 border rounded-lg bg-amber-50/50 border-amber-200 text-sm space-y-2"
+                >
+                  <div className="flex justify-between items-start">
+                    <span className="font-semibold text-gray-800">
+                      Thẻ #{issue.originalIndex + 1}
+                    </span>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-medium capitalize">
+                      {issue.issueType || "Cần sửa"}
+                    </span>
+                  </div>
+
+                  <p className="text-gray-700">{issue.feedback}</p>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs bg-white p-2.5 rounded border">
+                    <div>
+                      <span className="text-gray-500 block">Hiện tại:</span>
+                      <p className="font-medium text-gray-800">
+                        {terms[issue.originalIndex]?.term} : {terms[issue.originalIndex]?.definition}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-indigo-600 font-semibold block">Gợi ý sửa từ AI:</span>
+                      <p className="font-bold text-indigo-900">
+                        {issue.suggestedTerm || terms[issue.originalIndex]?.term} : {issue.suggestedDefinition || terms[issue.originalIndex]?.definition}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-1">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-xs h-8 border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                      onClick={() => handleApplySingleFix(issue)}
+                    >
+                      <Check className="h-3.5 w-3.5 mr-1 text-indigo-600" />
+                      Áp dụng sửa thẻ này
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-between items-center pt-2 border-t">
+              <Button
+                variant="ghost"
+                onClick={() => setIsProofreadDialogOpen(false)}
+              >
+                Đóng
+              </Button>
+              {proofreadIssues.length > 1 && (
+                <Button
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                  onClick={handleApplyAllFixes}
+                >
+                  Áp dụng tất cả ({proofreadIssues.length})
+                </Button>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </Protected>
   );

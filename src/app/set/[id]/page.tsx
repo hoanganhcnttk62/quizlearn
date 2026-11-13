@@ -32,6 +32,7 @@ import Image from "next/image";
 import StudyAnalytics from "@/components/StudyAnalytics";
 import { useGetStatisticOfSetQuery } from "../../../../redux/features/userStats/userStatisticsApi";
 import { SpeakButton } from "@/components/common/SpeakButton";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 type StudyMode = "flashcards" | "learn" | "test";
 type LearnMode = "multiple-choice" | "write" | "flashcard";
@@ -61,6 +62,7 @@ interface AnswerChoice {
 }
 
 export default function StudySetPage() {
+  const { t, language } = useLanguage();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { user } = useSelector((state: any) => state.auth);
@@ -528,24 +530,26 @@ export default function StudySetPage() {
               </Card>
             </div>
             <div className="flex gap-4 mt-6">
-              <Button onClick={handlePrevCard}>Previous</Button>
-              <Button onClick={handleNextCard}>Next</Button>
+              <Button onClick={handlePrevCard}>{language === "vi" ? "Thẻ trước" : "Previous"}</Button>
+              <Button onClick={handleNextCard}>{language === "vi" ? "Thẻ tiếp theo" : "Next"}</Button>
             </div>
             <div className="mt-4 text-sm text-gray-500">
-              Card {currentCardIndex + 1} of {cards.length + answeredCards.length}
+              {language === "vi"
+                ? `Thẻ ${currentCardIndex + 1} / ${cards.length + answeredCards.length}`
+                : `Card ${currentCardIndex + 1} of ${cards.length + answeredCards.length}`}
             </div>
             <div className="flex gap-6 mt-12">
               <Button
                 onClick={() => handleModeChange("learn")}
                 className="px-8 py-8 text-xl font-bold bg-white border border-primary text-primary shadow-xl hover:shadow-2xl hover:bg-primary hover:text-white transition-all duration-200 rounded-xl"
               >
-                Learn Mode
+                {language === "vi" ? "Chế độ Học tập" : "Learn Mode"}
               </Button>
               <Button
                 onClick={() => handleModeChange("test")}
                 className="px-8 py-8 text-xl font-bold bg-white border border-primary text-primary shadow-xl hover:shadow-2xl hover:bg-primary hover:text-white transition-all duration-200 rounded-xl"
               >
-                Test Mode
+                {language === "vi" ? "Chế độ Kiểm tra" : "Test Mode"}
               </Button>
             </div>
           </div>
@@ -652,7 +656,9 @@ export default function StudySetPage() {
           {/* Display All Cards Below the Tabs */}
           {currentMode !== "learn" && currentMode !== "test" && (
             <div className="mt-8">
-              <h2 className="text-2xl font-semibold mb-4">All Cards</h2>
+              <h2 className="text-2xl font-semibold mb-4">
+                {language === "vi" ? "Tất cả các thẻ trong học phần" : "All Cards in this Set"}
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {cards.map((card) => (
                   <Card key={card.id} className="p-4">

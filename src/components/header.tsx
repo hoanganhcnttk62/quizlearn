@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
+import { LanguageToggle } from "./LanguageToggle";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../redux/store";
 import { toggleSidebar } from "../../redux/features/layout/layoutSlice";
@@ -38,6 +40,7 @@ const navigationItems = [
 ];
 
 export function Header() {
+  const { t } = useLanguage();
   const dispatch = useDispatch();
   const { isSidebarOpen } = useSelector((state: RootState) => state.layout);
   const { user } = useSelector((state: any) => state.auth);
@@ -240,18 +243,21 @@ export function Header() {
                       variant="outline"
                       className="text-xs px-3 py-1 rounded-full"
                     >
-                      How to earn a streak
+                      {t("header.howToEarnStreak")}
                     </Button>
                   </HowToEarnStreakDialog>
                   <Button 
                     className="text-xs px-3 py-1 rounded-full"
                     onClick={() => router.push("/streak")}
                   >
-                    View Calendar
+                    {t("header.viewCalendar")}
                   </Button>
                 </div>
               </HoverCardContent>
             </HoverCard>
+            {/* Language Switcher */}
+            <LanguageToggle />
+
             {/* Admin button if admin */}
             {isAdmin && (
               <Button
@@ -261,7 +267,7 @@ export function Header() {
                 onClick={() => router.push("/admin")}
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                <span className="hidden sm:inline">Admin Portal</span>
+                <span className="hidden sm:inline">{t("nav.adminPortal")}</span>
               </Button>
             )}
             {/* User avatar dropdown */}
@@ -278,7 +284,7 @@ export function Header() {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>{t("nav.myAccount")}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {isAdmin && (
                   <>
@@ -287,27 +293,28 @@ export function Header() {
                       className="font-semibold text-blue-600 dark:text-blue-400 cursor-pointer"
                     >
                       <ShieldCheck className="mr-2 h-4 w-4" />
-                      <span>Admin Dashboard</span>
+                      <span>{t("nav.adminDashboard")}</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                   </>
                 )}
                 <DropdownMenuItem onClick={() => router.push("/profile")}>
                   <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
+                  <span>{t("nav.profile")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => router.push("/settings")}>
                   <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
+                  <span>{t("nav.settings")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <div className="px-2 py-1.5">
+                <div className="px-2 py-1.5 flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">{t("settings.theme")}</span>
                   <ThemeToggle />
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Logout</span>
+                  <span>{t("nav.logout")}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

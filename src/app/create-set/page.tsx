@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { Sparkles, Loader2, AlertCircle, Check } from "lucide-react";
 import { useProofreadCardsMutation, useCheckSingleTermMutation } from "../../../redux/features/ai/aiApi";
 import { SpeakButton } from "@/components/common/SpeakButton";
+import { useLanguage } from "@/i18n/LanguageContext";
 import {
   Dialog,
   DialogContent,
@@ -74,6 +75,7 @@ const ImageCarousel = ({
 };
 
 export default function CreateSetPage() {
+  const { t, language } = useLanguage();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [title, setTitle] = useState("");
@@ -621,7 +623,9 @@ export default function CreateSetPage() {
                         ) : (
                           <Sparkles className="h-4 w-4 text-indigo-500" />
                         )}
-                        {isProofreading ? "AI đang rà soát..." : "Rà soát lỗi bằng AI"}
+                        {isProofreading 
+                          ? (language === "vi" ? "AI đang rà soát..." : "AI is proofreading...") 
+                          : (language === "vi" ? "Rà soát lỗi bằng AI" : "AI Proofread")}
                       </Button>
                       <Button onClick={handleAddTerm}>Add Term</Button>
                     </div>
@@ -683,7 +687,7 @@ export default function CreateSetPage() {
                                   }}
                                   className="px-2 py-0.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded text-[11px] transition-colors"
                                 >
-                                  Sửa ngay
+                                  {language === "vi" ? "Sửa ngay" : "Fix now"}
                                 </button>
                                 <button
                                   type="button"
@@ -746,7 +750,7 @@ export default function CreateSetPage() {
                                   }}
                                   className="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded text-[11px] transition-colors"
                                 >
-                                  Sửa ngay
+                                  {language === "vi" ? "Sửa ngay" : "Fix now"}
                                 </button>
                                 <button
                                   type="button"

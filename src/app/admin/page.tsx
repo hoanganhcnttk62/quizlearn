@@ -37,8 +37,10 @@ import {
   useGetAdminFoldersQuery,
 } from "../../../redux/features/admin/adminApi";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function AdminDashboardPage() {
+  const { t, language } = useLanguage();
   const router = useRouter();
   const { user } = useSelector((state: any) => state.auth);
 
@@ -137,14 +139,14 @@ export default function AdminDashboardPage() {
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                Quản Trị Hệ Thống
+                {t("admin.dashboardTitle")}
               </h1>
               <span className="bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wider">
                 Admin Console
               </span>
             </div>
             <p className="text-sm text-muted-foreground mt-1.5">
-              Trung tâm điều hành và giám sát toàn bộ người dùng, bộ thẻ flashcard và dữ liệu học tập
+              {t("admin.dashboardSubtitle")}
             </p>
           </div>
 
@@ -158,11 +160,11 @@ export default function AdminDashboardPage() {
                 refetchUsers();
                 refetchSets();
                 refetchFolders();
-                toast.info("Đã đồng bộ dữ liệu mới nhất");
+                toast.info(language === "vi" ? "Đã đồng bộ dữ liệu mới nhất" : "Data synchronized successfully");
               }}
             >
               <RefreshCw className="w-4 h-4" />
-              Đồng Bộ Dữ Liệu
+              {t("admin.refresh")}
             </Button>
           </div>
         </div>
@@ -172,19 +174,19 @@ export default function AdminDashboardPage() {
           <TabsList className="bg-muted/70 p-1 rounded-lg border border-border">
             <TabsTrigger value="overview" className="gap-2 font-medium">
               <TrendingUp className="w-4 h-4 text-blue-600" />
-              Tổng Quan
+              {t("admin.tabOverview")}
             </TabsTrigger>
             <TabsTrigger value="users" className="gap-2 font-medium">
               <Users className="w-4 h-4 text-emerald-600" />
-              Người Dùng ({stats?.totalUsers ?? "..."})
+              {t("admin.tabUsers")} ({stats?.totalUsers ?? "..."})
             </TabsTrigger>
             <TabsTrigger value="sets" className="gap-2 font-medium">
               <Layers className="w-4 h-4 text-indigo-600" />
-              Bộ Thẻ Học ({stats?.totalSets ?? "..."})
+              {t("admin.tabSets")} ({stats?.totalSets ?? "..."})
             </TabsTrigger>
             <TabsTrigger value="folders" className="gap-2 font-medium">
               <Folder className="w-4 h-4 text-amber-600" />
-              Thư Mục ({stats?.totalFolders ?? "..."})
+              {t("admin.tabFolders")} ({stats?.totalFolders ?? "..."})
             </TabsTrigger>
           </TabsList>
 

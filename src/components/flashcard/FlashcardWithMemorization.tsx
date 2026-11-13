@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { SpeakButton } from "@/components/common/SpeakButton";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface FlashcardWithMemorizationProps {
   term: string;
@@ -20,6 +21,7 @@ export const FlashcardWithMemorization: React.FC<FlashcardWithMemorizationProps>
   onMemorizationResponse,
   className
 }) => {
+  const { language } = useLanguage();
   const [isFlipped, setIsFlipped] = useState(false);
   const [showContent, setShowContent] = useState(true);
 
@@ -91,14 +93,14 @@ export const FlashcardWithMemorization: React.FC<FlashcardWithMemorizationProps>
             className="px-8 py-6 text-lg bg-red-50 hover:bg-red-100 text-red-600 border-red-200"
             onClick={() => handleMemorizationResponse(false)}
           >
-            No, I need to review
+            {language === "vi" ? "Chưa thuộc, cần ôn lại" : "No, I need to review"}
           </Button>
           <Button
             variant="outline"
             className="px-8 py-6 text-lg bg-green-50 hover:bg-green-100 text-green-600 border-green-200"
             onClick={() => handleMemorizationResponse(true)}
           >
-            Yes, I know this
+            {language === "vi" ? "Đã thuộc từ này" : "Yes, I know this"}
           </Button>
         </div>
       )}
