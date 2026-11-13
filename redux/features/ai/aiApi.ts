@@ -1,5 +1,29 @@
 import { apiSlice } from "../api/apiSlice";
 
+// Supported language codes — must match backend SupportedLanguage type
+export type SupportedLanguage =
+  | "vi"   // Tiếng Việt
+  | "en"   // English
+  | "ja"   // 日本語
+  | "ko"   // 한국어
+  | "zh"   // 中文
+  | "fr"   // Français
+  | "de"   // Deutsch
+  | "es"   // Español
+  | "auto"; // Auto-detect
+
+export const LANGUAGE_OPTIONS: { value: SupportedLanguage; label: string; flag: string }[] = [
+  { value: "auto", label: "Tự động", flag: "🌐" },
+  { value: "vi",   label: "Tiếng Việt", flag: "🇻🇳" },
+  { value: "en",   label: "English",    flag: "🇬🇧" },
+  { value: "ja",   label: "日本語",      flag: "🇯🇵" },
+  { value: "ko",   label: "한국어",      flag: "🇰🇷" },
+  { value: "zh",   label: "中文",        flag: "🇨🇳" },
+  { value: "fr",   label: "Français",   flag: "🇫🇷" },
+  { value: "de",   label: "Deutsch",    flag: "🇩🇪" },
+  { value: "es",   label: "Español",    flag: "🇪🇸" },
+];
+
 export interface CheckAnswerRequest {
   term: string;
   definition?: string;
@@ -25,6 +49,8 @@ export interface ProofreadCardRequest {
     term: string;
     definition: string;
   }>;
+  termLang?: SupportedLanguage;
+  defLang?: SupportedLanguage;
 }
 
 export interface ProofreadCardIssue {
@@ -45,6 +71,8 @@ export interface ProofreadCardResponse {
 export interface CheckTermRequest {
   term: string;
   definition?: string;
+  termLang?: SupportedLanguage;
+  defLang?: SupportedLanguage;
 }
 
 export interface CheckTermResponse {
