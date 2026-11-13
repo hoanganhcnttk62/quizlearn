@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
+import Link from "next/link";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,16 +14,19 @@ import {
   Layers,
   BookOpen,
   Folder,
-  ShieldAlert,
+  ShieldCheck,
   Search,
   Trash2,
   Lock,
   Unlock,
   TrendingUp,
-  CheckCircle,
+  CheckCircle2,
   XCircle,
   RefreshCw,
   ExternalLink,
+  Eye,
+  GraduationCap,
+  Sparkles,
 } from "lucide-react";
 import {
   useGetAdminStatsQuery,
@@ -33,7 +37,6 @@ import {
   useGetAdminFoldersQuery,
 } from "../../../redux/features/admin/adminApi";
 import { toast } from "sonner";
-import Image from "next/image";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -104,11 +107,13 @@ export default function AdminDashboardPage() {
     return (
       <PageLayout>
         <div className="flex flex-col items-center justify-center min-h-[70vh] p-6 text-center">
-          <ShieldAlert className="w-16 h-16 text-red-500 mb-4 animate-bounce" />
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+          <div className="w-16 h-16 rounded-2xl bg-rose-50 dark:bg-rose-950/40 flex items-center justify-center mb-4">
+            <ShieldCheck className="w-9 h-9 text-rose-600 dark:text-rose-400" />
+          </div>
+          <h1 className="text-2xl font-bold text-foreground">
             Truy Cập Bị Giới Hạn
           </h1>
-          <p className="text-gray-500 max-w-md mt-2 mb-6">
+          <p className="text-muted-foreground max-w-md mt-2 mb-6">
             Bạn cần quyền Quản Trị Viên (Admin) để có thể xem và quản lý hệ thống QuizLearn.
           </p>
           <Button onClick={() => router.push("/dashboard")}>
@@ -125,57 +130,60 @@ export default function AdminDashboardPage() {
     <PageLayout>
       <div className="p-6 max-w-7xl mx-auto space-y-6">
         {/* Top Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-200 dark:border-gray-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
-                Admin Portal
-              </span>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                Bảng Quản Trị Hệ Thống
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-sm">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                Quản Trị Hệ Thống
               </h1>
+              <span className="bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wider">
+                Admin Console
+              </span>
             </div>
-            <p className="text-sm text-gray-500 mt-1">
-              Quản lý toàn bộ người dùng, bộ flashcard, thư mục và thống kê của QuizLearn
+            <p className="text-sm text-muted-foreground mt-1.5">
+              Trung tâm điều hành và giám sát toàn bộ người dùng, bộ thẻ flashcard và dữ liệu học tập
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <Button
               variant="outline"
               size="sm"
-              className="gap-2"
+              className="gap-2 shadow-xs border-border bg-card hover:bg-accent"
               onClick={() => {
                 refetchStats();
                 refetchUsers();
                 refetchSets();
                 refetchFolders();
-                toast.info("Đã làm mới dữ liệu");
+                toast.info("Đã đồng bộ dữ liệu mới nhất");
               }}
             >
               <RefreshCw className="w-4 h-4" />
-              Làm Mới
+              Đồng Bộ Dữ Liệu
             </Button>
           </div>
         </div>
 
         {/* Tab Navigation */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-gray-100 dark:bg-gray-800 p-1 rounded-xl">
+          <TabsList className="bg-muted/70 p-1 rounded-lg border border-border">
             <TabsTrigger value="overview" className="gap-2 font-medium">
-              <TrendingUp className="w-4 h-4" />
+              <TrendingUp className="w-4 h-4 text-blue-600" />
               Tổng Quan
             </TabsTrigger>
             <TabsTrigger value="users" className="gap-2 font-medium">
-              <Users className="w-4 h-4" />
+              <Users className="w-4 h-4 text-emerald-600" />
               Người Dùng ({stats?.totalUsers ?? "..."})
             </TabsTrigger>
             <TabsTrigger value="sets" className="gap-2 font-medium">
-              <Layers className="w-4 h-4" />
-              Bộ Thẻ ({stats?.totalSets ?? "..."})
+              <Layers className="w-4 h-4 text-indigo-600" />
+              Bộ Thẻ Học ({stats?.totalSets ?? "..."})
             </TabsTrigger>
             <TabsTrigger value="folders" className="gap-2 font-medium">
-              <Folder className="w-4 h-4" />
+              <Folder className="w-4 h-4 text-amber-600" />
               Thư Mục ({stats?.totalFolders ?? "..."})
             </TabsTrigger>
           </TabsList>
@@ -184,71 +192,71 @@ export default function AdminDashboardPage() {
           <TabsContent value="overview" className="space-y-6">
             {/* Stat Cards Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card className="border border-purple-100 dark:border-purple-900/40 bg-gradient-to-br from-white to-purple-50/30 dark:from-gray-900 dark:to-purple-950/20 shadow-sm">
+              <Card className="border border-border/80 bg-card shadow-xs hover:shadow-md transition-shadow">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-500">
-                    Tổng Người Dùng
+                  <CardTitle className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                    Người Dùng
                   </CardTitle>
-                  <div className="w-9 h-9 rounded-xl bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-purple-600">
-                    <Users className="w-5 h-5" />
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center">
+                    <Users className="w-4 h-4" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+                  <div className="text-2xl font-bold text-foreground">
                     {isStatsLoading ? "..." : stats?.totalUsers}
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Đã đăng ký tài khoản</p>
+                  <p className="text-xs text-muted-foreground mt-1">Tài khoản đã đăng ký</p>
                 </CardContent>
               </Card>
 
-              <Card className="border border-blue-100 dark:border-blue-900/40 bg-gradient-to-br from-white to-blue-50/30 dark:from-gray-900 dark:to-blue-950/20 shadow-sm">
+              <Card className="border border-border/80 bg-card shadow-xs hover:shadow-md transition-shadow">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-500">
-                    Tổng Bộ Thẻ (Sets)
+                  <CardTitle className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                    Bộ Thẻ Flashcard
                   </CardTitle>
-                  <div className="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600">
-                    <Layers className="w-5 h-5" />
+                  <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 flex items-center justify-center">
+                    <Layers className="w-4 h-4" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+                  <div className="text-2xl font-bold text-foreground">
                     {isStatsLoading ? "..." : stats?.totalSets}
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Bộ học tập đang lưu hành</p>
+                  <p className="text-xs text-muted-foreground mt-1">Bộ học tập đang lưu hành</p>
                 </CardContent>
               </Card>
 
-              <Card className="border border-emerald-100 dark:border-emerald-900/40 bg-gradient-to-br from-white to-emerald-50/30 dark:from-gray-900 dark:to-emerald-950/20 shadow-sm">
+              <Card className="border border-border/80 bg-card shadow-xs hover:shadow-md transition-shadow">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-500">
+                  <CardTitle className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                     Tổng Thẻ (Cards)
                   </CardTitle>
-                  <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-600">
-                    <BookOpen className="w-5 h-5" />
+                  <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center">
+                    <BookOpen className="w-4 h-4" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+                  <div className="text-2xl font-bold text-foreground">
                     {isStatsLoading ? "..." : stats?.totalCards}
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Thẻ câu hỏi và thuật ngữ</p>
+                  <p className="text-xs text-muted-foreground mt-1">Thuật ngữ & định nghĩa</p>
                 </CardContent>
               </Card>
 
-              <Card className="border border-amber-100 dark:border-amber-900/40 bg-gradient-to-br from-white to-amber-50/30 dark:from-gray-900 dark:to-amber-950/20 shadow-sm">
+              <Card className="border border-border/80 bg-card shadow-xs hover:shadow-md transition-shadow">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-500">
-                    Tổng Thư Mục
+                  <CardTitle className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                    Thư Mục Học Tập
                   </CardTitle>
-                  <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center text-amber-600">
-                    <Folder className="w-5 h-5" />
+                  <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center">
+                    <Folder className="w-4 h-4" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+                  <div className="text-2xl font-bold text-foreground">
                     {isStatsLoading ? "..." : stats?.totalFolders}
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Thư mục phân loại bài học</p>
+                  <p className="text-xs text-muted-foreground mt-1">Thư mục phân loại chủ đề</p>
                 </CardContent>
               </Card>
             </div>
@@ -256,40 +264,45 @@ export default function AdminDashboardPage() {
             {/* Recent Items Preview */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Recent Users */}
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
+              <Card className="border border-border/80 shadow-xs">
+                <CardHeader className="flex flex-row items-center justify-between pb-3">
                   <div>
-                    <CardTitle className="text-base font-semibold">Người Dùng Mới Nhất</CardTitle>
-                    <CardDescription>Các tài khoản vừa tham gia</CardDescription>
+                    <CardTitle className="text-base font-semibold">Tài Khoản Mới Nhất</CardTitle>
+                    <CardDescription>Người dùng vừa gia nhập nền tảng</CardDescription>
                   </div>
-                  <Button variant="ghost" size="sm" onClick={() => setActiveTab("users")}>
-                    Xem Tất Cả &rarr;
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs text-blue-600 hover:text-blue-700"
+                    onClick={() => setActiveTab("users")}
+                  >
+                    Xem Chi Tiết &rarr;
                   </Button>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
+                  <div className="space-y-2.5">
                     {stats?.recentUsers?.map((u: any) => (
                       <div
                         key={u.id}
-                        className="flex items-center justify-between p-2.5 rounded-lg border border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                        className="flex items-center justify-between p-3 rounded-lg border border-border/60 bg-muted/20 hover:bg-muted/50 transition-colors"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-xs uppercase">
+                          <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center font-bold text-xs uppercase">
                             {u.username?.[0] || "U"}
                           </div>
                           <div>
-                            <p className="text-sm font-semibold">{u.username}</p>
-                            <p className="text-xs text-gray-500">{u.email}</p>
+                            <p className="text-sm font-semibold text-foreground">{u.username}</p>
+                            <p className="text-xs text-muted-foreground">{u.email}</p>
                           </div>
                         </div>
                         <span
-                          className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                          className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${
                             u.statusId === 1
-                              ? "bg-emerald-100 text-emerald-700"
-                              : "bg-red-100 text-red-700"
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800"
+                              : "bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800"
                           }`}
                         >
-                          {u.statusId === 1 ? "Active" : "Locked"}
+                          {u.statusId === 1 ? "Hoạt động" : "Đã khóa"}
                         </span>
                       </div>
                     ))}
@@ -298,37 +311,50 @@ export default function AdminDashboardPage() {
               </Card>
 
               {/* Recent Sets */}
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
+              <Card className="border border-border/80 shadow-xs">
+                <CardHeader className="flex flex-row items-center justify-between pb-3">
                   <div>
-                    <CardTitle className="text-base font-semibold">Bộ Thẻ Mới Tạo</CardTitle>
-                    <CardDescription>Các bộ flashcard vừa được thêm</CardDescription>
+                    <CardTitle className="text-base font-semibold">Bộ Thẻ Mới Cập Nhật</CardTitle>
+                    <CardDescription>Bấm vào tiêu đề để mở học trực tiếp</CardDescription>
                   </div>
-                  <Button variant="ghost" size="sm" onClick={() => setActiveTab("sets")}>
-                    Xem Tất Cả &rarr;
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs text-blue-600 hover:text-blue-700"
+                    onClick={() => setActiveTab("sets")}
+                  >
+                    Xem Chi Tiết &rarr;
                   </Button>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
+                  <div className="space-y-2.5">
                     {stats?.recentSets?.map((s: any) => (
                       <div
                         key={s.id}
-                        className="flex items-center justify-between p-2.5 rounded-lg border border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                        className="flex items-center justify-between p-3 rounded-lg border border-border/60 bg-muted/20 hover:bg-muted/50 transition-colors"
                       >
-                        <div>
-                          <p className="text-sm font-semibold">{s.title}</p>
-                          <p className="text-xs text-gray-500">
-                            Bởi: {s.user?.username || "Ẩn danh"}
+                        <div className="min-w-0 pr-3">
+                          <Link
+                            href={`/set/${s.id}`}
+                            target="_blank"
+                            className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1.5 truncate group"
+                            title="Mở bộ thẻ này"
+                          >
+                            <span className="truncate">{s.title}</span>
+                            <ExternalLink className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 flex-shrink-0" />
+                          </Link>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            Tác giả: {s.user?.username || "Ẩn danh"}
                           </p>
                         </div>
                         <span
-                          className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                          className={`text-xs px-2.5 py-0.5 rounded-full font-medium whitespace-nowrap ${
                             s.isPublic
-                              ? "bg-blue-100 text-blue-700"
-                              : "bg-gray-100 text-gray-600"
+                              ? "bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800"
+                              : "bg-muted text-muted-foreground border border-border"
                           }`}
                         >
-                          {s.isPublic ? "Công Khai" : "Riêng Tư"}
+                          {s.isPublic ? "Công khai" : "Riêng tư"}
                         </span>
                       </div>
                     ))}
@@ -340,99 +366,102 @@ export default function AdminDashboardPage() {
 
           {/* TAB 2: USERS MANAGEMENT */}
           <TabsContent value="users" className="space-y-4">
-            <Card>
-              <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <Card className="border border-border/80 shadow-xs">
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4">
                 <div>
-                  <CardTitle>Danh Sách Người Dùng</CardTitle>
+                  <CardTitle className="text-lg">Danh Sách Người Dùng</CardTitle>
                   <CardDescription>
-                    Quản lý thông tin, phân quyền và khóa/mở tài khoản
+                    Xem thông tin tài khoản, phân quyền và khóa/mở quyền truy cập
                   </CardDescription>
                 </div>
                 <div className="relative w-full sm:w-72">
-                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     placeholder="Tìm theo username, email..."
                     value={userSearch}
                     onChange={(e) => setUserSearch(e.target.value)}
-                    className="pl-9"
+                    className="pl-9 bg-card"
                   />
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">
-                    <thead className="bg-gray-50 dark:bg-gray-800/60 text-gray-600 dark:text-gray-400 font-semibold border-b">
+                    <thead className="bg-muted/60 text-muted-foreground font-semibold border-y border-border">
                       <tr>
-                        <th className="p-3">Người Dùng</th>
+                        <th className="p-3 pl-6">Người Dùng</th>
                         <th className="p-3">Vai Trò</th>
-                        <th className="p-3">Cấp Độ / Điểm</th>
-                        <th className="p-3">Streak</th>
+                        <th className="p-3">Tiến Độ</th>
+                        <th className="p-3">Chuỗi Streak</th>
                         <th className="p-3">Trạng Thái</th>
-                        <th className="p-3 text-right">Hành Động</th>
+                        <th className="p-3 pr-6 text-right">Thao Tác</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                    <tbody className="divide-y divide-border/60">
                       {isUsersLoading ? (
                         <tr>
-                          <td colSpan={6} className="text-center py-8 text-gray-500">
+                          <td colSpan={6} className="text-center py-10 text-muted-foreground">
                             Đang tải danh sách người dùng...
                           </td>
                         </tr>
                       ) : usersData?.users?.length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="text-center py-8 text-gray-500">
+                          <td colSpan={6} className="text-center py-10 text-muted-foreground">
                             Không tìm thấy người dùng nào.
                           </td>
                         </tr>
                       ) : (
                         usersData?.users?.map((u: any) => (
-                          <tr key={u.id} className="hover:bg-gray-50/60 dark:hover:bg-gray-800/40">
-                            <td className="p-3 flex items-center gap-3">
-                              <div className="w-9 h-9 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-sm">
-                                {u.username?.[0]?.toUpperCase() || "U"}
+                          <tr key={u.id} className="hover:bg-muted/30 transition-colors">
+                            <td className="p-3 pl-6 flex items-center gap-3">
+                              <div className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center font-bold text-xs uppercase flex-shrink-0">
+                                {u.username?.[0] || "U"}
                               </div>
-                              <div>
-                                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                              <div className="min-w-0">
+                                <p className="font-semibold text-foreground truncate">
                                   {u.username}
                                 </p>
-                                <p className="text-xs text-gray-500">{u.email}</p>
+                                <p className="text-xs text-muted-foreground truncate">{u.email}</p>
                               </div>
                             </td>
                             <td className="p-3">
                               <span
-                                className={`text-xs px-2.5 py-1 rounded-full font-semibold ${
+                                className={`text-xs px-2.5 py-1 rounded-full font-semibold border ${
                                   u.role?.name === "Admin"
-                                    ? "bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300"
-                                    : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                                    ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800"
+                                    : "bg-muted text-muted-foreground border-border"
                                 }`}
                               >
                                 {u.role?.name || "User"}
                               </span>
                             </td>
                             <td className="p-3">
-                              <span className="font-medium text-gray-700 dark:text-gray-300">
-                                Lv.{u.level || 1}
-                              </span>
-                              <span className="text-xs text-gray-500 ml-1">
-                                ({u.experiencePoints || 0} XP)
-                              </span>
+                              <div className="flex items-center gap-1.5">
+                                <GraduationCap className="w-4 h-4 text-muted-foreground" />
+                                <span className="font-medium text-foreground">
+                                  Lv.{u.level || 1}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  ({u.experiencePoints || 0} XP)
+                                </span>
+                              </div>
                             </td>
                             <td className="p-3">
-                              <span className="font-semibold text-orange-600">
+                              <span className="font-semibold text-orange-600 dark:text-orange-400">
                                 🔥 {u.currentStreak || 0} ngày
                               </span>
                             </td>
                             <td className="p-3">
                               <span
-                                className={`inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-full font-medium ${
+                                className={`inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-full font-medium border ${
                                   u.statusId === 1
-                                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
-                                    : "bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300"
+                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800"
+                                    : "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800"
                                 }`}
                               >
                                 {u.statusId === 1 ? (
                                   <>
-                                    <CheckCircle className="w-3 h-3" /> Hoạt động
+                                    <CheckCircle2 className="w-3 h-3" /> Hoạt động
                                   </>
                                 ) : (
                                   <>
@@ -441,12 +470,16 @@ export default function AdminDashboardPage() {
                                 )}
                               </span>
                             </td>
-                            <td className="p-3 text-right">
+                            <td className="p-3 pr-6 text-right">
                               {u.role?.name !== "Admin" && (
                                 <Button
-                                  variant={u.statusId === 1 ? "destructive" : "outline"}
+                                  variant={u.statusId === 1 ? "outline" : "default"}
                                   size="sm"
-                                  className="h-8 gap-1"
+                                  className={`h-8 gap-1.5 text-xs ${
+                                    u.statusId === 1
+                                      ? "text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 dark:border-rose-800"
+                                      : "bg-emerald-600 hover:bg-emerald-700 text-white"
+                                  }`}
                                   onClick={() => handleToggleStatus(u.id, u.statusId)}
                                   disabled={isToggling}
                                 >
@@ -474,104 +507,125 @@ export default function AdminDashboardPage() {
 
           {/* TAB 3: SETS MANAGEMENT */}
           <TabsContent value="sets" className="space-y-4">
-            <Card>
-              <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <Card className="border border-border/80 shadow-xs">
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4">
                 <div>
-                  <CardTitle>Quản Lý Bộ Thẻ Flashcard</CardTitle>
+                  <CardTitle className="text-lg">Quản Lý Bộ Thẻ Flashcard</CardTitle>
                   <CardDescription>
-                    Xem tất cả các bộ học tập trên hệ thống và xóa các bộ thẻ vi phạm
+                    Toàn bộ thẻ học trên hệ thống — Bấm vào link để xem và kiểm tra nội dung
                   </CardDescription>
                 </div>
                 <div className="relative w-full sm:w-72">
-                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     placeholder="Tìm theo tiêu đề bộ thẻ..."
                     value={setSearch}
                     onChange={(e) => setSetSearch(e.target.value)}
-                    className="pl-9"
+                    className="pl-9 bg-card"
                   />
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">
-                    <thead className="bg-gray-50 dark:bg-gray-800/60 text-gray-600 dark:text-gray-400 font-semibold border-b">
+                    <thead className="bg-muted/60 text-muted-foreground font-semibold border-y border-border">
                       <tr>
-                        <th className="p-3">Bộ Thẻ</th>
+                        <th className="p-3 pl-6">Bộ Thẻ (Đính kèm Link)</th>
                         <th className="p-3">Tác Giả</th>
-                        <th className="p-3">Số Lượng Thẻ</th>
-                        <th className="p-3">Quyền Xem</th>
+                        <th className="p-3">Số Thẻ</th>
+                        <th className="p-3">Trạng Thái</th>
                         <th className="p-3">Ngày Tạo</th>
-                        <th className="p-3 text-right">Hành Động</th>
+                        <th className="p-3 pr-6 text-right">Hành Động</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                    <tbody className="divide-y divide-border/60">
                       {isSetsLoading ? (
                         <tr>
-                          <td colSpan={6} className="text-center py-8 text-gray-500">
+                          <td colSpan={6} className="text-center py-10 text-muted-foreground">
                             Đang tải danh sách bộ thẻ...
                           </td>
                         </tr>
                       ) : setsData?.sets?.length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="text-center py-8 text-gray-500">
+                          <td colSpan={6} className="text-center py-10 text-muted-foreground">
                             Không tìm thấy bộ thẻ nào.
                           </td>
                         </tr>
                       ) : (
                         setsData?.sets?.map((s: any) => (
-                          <tr key={s.id} className="hover:bg-gray-50/60 dark:hover:bg-gray-800/40">
-                            <td className="p-3">
-                              <p className="font-semibold text-gray-900 dark:text-gray-100">
-                                {s.title}
-                              </p>
+                          <tr key={s.id} className="hover:bg-muted/30 transition-colors">
+                            {/* CỘT CÓ LINK TRỰC TIẾP VÀO BỘ THẺ */}
+                            <td className="p-3 pl-6">
+                              <Link
+                                href={`/set/${s.id}`}
+                                target="_blank"
+                                className="font-semibold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1.5 group"
+                              >
+                                <span>{s.title}</span>
+                                <ExternalLink className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                              </Link>
                               {s.description && (
-                                <p className="text-xs text-gray-500 line-clamp-1 max-w-xs">
+                                <p className="text-xs text-muted-foreground line-clamp-1 max-w-sm mt-0.5">
                                   {s.description}
                                 </p>
                               )}
                             </td>
                             <td className="p-3">
                               <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
-                                  {s.user?.username?.[0]?.toUpperCase() || "A"}
+                                <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center font-bold text-xs uppercase flex-shrink-0">
+                                  {s.user?.username?.[0] || "A"}
                                 </div>
-                                <span className="font-medium text-xs">
+                                <span className="font-medium text-xs text-foreground">
                                   {s.user?.username || "Không rõ"}
                                 </span>
                               </div>
                             </td>
                             <td className="p-3">
-                              <span className="font-bold text-purple-600">
+                              <span className="font-semibold text-foreground">
                                 {s.cardCount}
                               </span>{" "}
-                              thẻ
+                              <span className="text-xs text-muted-foreground">thẻ</span>
                             </td>
                             <td className="p-3">
                               <span
-                                className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${
+                                className={`text-xs px-2.5 py-0.5 rounded-full font-medium border ${
                                   s.isPublic
-                                    ? "bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300"
-                                    : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                                    ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800"
+                                    : "bg-muted text-muted-foreground border-border"
                                 }`}
                               >
-                                {s.isPublic ? "Công Khai" : "Riêng Tư"}
+                                {s.isPublic ? "Công khai" : "Riêng tư"}
                               </span>
                             </td>
-                            <td className="p-3 text-xs text-gray-500">
+                            <td className="p-3 text-xs text-muted-foreground">
                               {new Date(s.createdAt).toLocaleDateString("vi-VN")}
                             </td>
-                            <td className="p-3 text-right">
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                className="h-8 gap-1"
-                                onClick={() => handleDeleteSet(s.id, s.title)}
-                                disabled={isDeletingSet}
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                                Xóa
-                              </Button>
+                            <td className="p-3 pr-6 text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                {/* Nút xem bộ thẻ */}
+                                <Link href={`/set/${s.id}`} target="_blank">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 gap-1 text-xs border-border hover:bg-muted text-foreground"
+                                  >
+                                    <Eye className="w-3.5 h-3.5" />
+                                    Xem
+                                  </Button>
+                                </Link>
+
+                                {/* Nút xóa bộ thẻ */}
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-8 gap-1 text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 dark:border-rose-800"
+                                  onClick={() => handleDeleteSet(s.id, s.title)}
+                                  disabled={isDeletingSet}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                  Xóa
+                                </Button>
+                              </div>
                             </td>
                           </tr>
                         ))
@@ -585,49 +639,51 @@ export default function AdminDashboardPage() {
 
           {/* TAB 4: FOLDERS MANAGEMENT */}
           <TabsContent value="folders" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Quản Lý Thư Mục Học Tập</CardTitle>
+            <Card className="border border-border/80 shadow-xs">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg">Quản Lý Thư Mục Học Tập</CardTitle>
                 <CardDescription>
-                  Các thư mục phân loại bài học do người dùng tạo
+                  Các thư mục phân loại bài học do người dùng khởi tạo
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">
-                    <thead className="bg-gray-50 dark:bg-gray-800/60 text-gray-600 dark:text-gray-400 font-semibold border-b">
+                    <thead className="bg-muted/60 text-muted-foreground font-semibold border-y border-border">
                       <tr>
-                        <th className="p-3">Tên Thư Mục</th>
+                        <th className="p-3 pl-6">Tên Thư Mục</th>
                         <th className="p-3">Người Sở Hữu</th>
-                        <th className="p-3">Ngày Tạo</th>
+                        <th className="p-3 pr-6">Ngày Tạo</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                    <tbody className="divide-y divide-border/60">
                       {isFoldersLoading ? (
                         <tr>
-                          <td colSpan={3} className="text-center py-8 text-gray-500">
-                            Đang tải thư mục...
+                          <td colSpan={3} className="text-center py-10 text-muted-foreground">
+                            Đang tải danh sách thư mục...
                           </td>
                         </tr>
                       ) : foldersData?.folders?.length === 0 ? (
                         <tr>
-                          <td colSpan={3} className="text-center py-8 text-gray-500">
+                          <td colSpan={3} className="text-center py-10 text-muted-foreground">
                             Chưa có thư mục nào.
                           </td>
                         </tr>
                       ) : (
                         foldersData?.folders?.map((f: any) => (
-                          <tr key={f.id} className="hover:bg-gray-50/60 dark:hover:bg-gray-800/40">
-                            <td className="p-3 flex items-center gap-2">
-                              <Folder className="w-4 h-4 text-amber-500" />
-                              <span className="font-semibold text-gray-900 dark:text-gray-100">
+                          <tr key={f.id} className="hover:bg-muted/30 transition-colors">
+                            <td className="p-3 pl-6 flex items-center gap-2.5">
+                              <div className="w-7 h-7 rounded-md bg-amber-50 dark:bg-amber-950/50 flex items-center justify-center text-amber-600">
+                                <Folder className="w-4 h-4" />
+                              </div>
+                              <span className="font-semibold text-foreground">
                                 {f.title}
                               </span>
                             </td>
-                            <td className="p-3 text-xs">
+                            <td className="p-3 text-xs text-muted-foreground">
                               {f.user?.username || f.user?.email || "Không rõ"}
                             </td>
-                            <td className="p-3 text-xs text-gray-500">
+                            <td className="p-3 pr-6 text-xs text-muted-foreground">
                               {new Date(f.createdAt).toLocaleDateString("vi-VN")}
                             </td>
                           </tr>

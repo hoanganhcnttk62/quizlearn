@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, LogOut, Menu, Settings, User, Flame, ShieldAlert } from "lucide-react";
+import { Bell, LogOut, Menu, Settings, User, Flame, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -256,11 +256,11 @@ export function Header() {
             {isAdmin && (
               <Button
                 size="sm"
-                variant="default"
-                className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-1.5 rounded-full px-3 py-1 font-medium shadow-sm transition-all"
+                variant="outline"
+                className="border-blue-600/30 bg-blue-50/70 hover:bg-blue-100 text-blue-700 dark:border-blue-500/30 dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-900/50 flex items-center gap-1.5 rounded-full px-3 py-1 font-semibold text-xs shadow-sm transition-all"
                 onClick={() => router.push("/admin")}
               >
-                <ShieldAlert className="w-4 h-4" />
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                 <span className="hidden sm:inline">Admin Portal</span>
               </Button>
             )}
@@ -284,9 +284,9 @@ export function Header() {
                   <>
                     <DropdownMenuItem
                       onClick={() => router.push("/admin")}
-                      className="font-semibold text-purple-600 dark:text-purple-400 cursor-pointer"
+                      className="font-semibold text-blue-600 dark:text-blue-400 cursor-pointer"
                     >
-                      <ShieldAlert className="mr-2 h-4 w-4" />
+                      <ShieldCheck className="mr-2 h-4 w-4" />
                       <span>Admin Dashboard</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />

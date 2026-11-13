@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { LayoutGrid, Store, Box, Users, Settings, HelpCircle, ChevronLeft, Folder, ShieldAlert } from "lucide-react";
+import { LayoutGrid, Store, Box, Users, Settings, HelpCircle, ChevronLeft, Folder, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
@@ -78,8 +78,8 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
           {isAdmin && (
             <div className="mb-4">
               {isOpen && (
-                <p className="text-xs font-semibold text-purple-600 dark:text-purple-400 px-4 mb-2 tracking-wider">
-                  ADMINISTRATION
+                <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 px-4 mb-2 tracking-wider">
+                  QUẢN TRỊ VIÊN
                 </p>
               )}
               <nav className="space-y-1">
@@ -88,13 +88,13 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                   className={cn(
                     "flex items-center gap-3 px-4 py-2 text-sm font-semibold rounded-lg transition-colors",
                     pathName.startsWith("/admin")
-                      ? "bg-purple-600 text-white shadow-sm"
-                      : "text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40",
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40",
                     !isOpen && "justify-center px-2"
                   )}
                   title={!isOpen ? "Admin Portal" : undefined}
                 >
-                  <ShieldAlert className="w-5 h-5" />
+                  <ShieldCheck className="w-5 h-5" />
                   {isOpen && "Admin Dashboard"}
                 </Link>
               </nav>

@@ -118,12 +118,22 @@ export default function CreateSetPage() {
     >
   >({});
   const typingTimeouts = useRef<Record<number, any>>({});
+  const lastCheckedValues = useRef<Record<number, string>>({});
+  const isCheckingRef = useRef<Record<number, boolean>>({});
 
   const handleAutoCheckTerm = async (index: number, termValue?: string, defValue?: string) => {
+    // 1. Hủy bỏ bất kỳ timer pending nào của index này
+    if (typingTimeouts.current[index]) {
+      clearTimeout(typingTimeouts.current[index]);
+      delete typingTimeouts.current[index];
+    }
+
     const termToCheck = (termValue !== undefined ? termValue : terms[index]?.term || "").trim();
     const defToCheck = (defValue !== undefined ? defValue : terms[index]?.definition || "").trim();
 
+    // 2. Nếu nội dung quá ngắn hoặc rỗng, xóa gợi ý và xóa cache
     if ((!termToCheck || termToCheck.length < 2) && (!defToCheck || defToCheck.length < 2)) {
+      delete lastCheckedValues.current[index];
       setInlineSuggestions((prev) => {
         const copy = { ...prev };
         delete copy[index];
@@ -132,7 +142,19 @@ export default function CreateSetPage() {
       return;
     }
 
+    // 3. Cache Check: Nếu giá trị không hề thay đổi so với lần check trước -> BỎ QUA NGAY
+    const cacheKey = `${termToCheck.toLowerCase()}:::${defToCheck.toLowerCase()}`;
+    if (lastCheckedValues.current[index] === cacheKey) {
+      return;
+    }
+
+    // 4. Tránh gửi đè nếu request trước cho thẻ này chưa hoàn thành
+    if (isCheckingRef.current[index]) {
+      return;
+    }
+
     try {
+      isCheckingRef.current[index] = true;
       setInlineSuggestions((prev) => ({
         ...prev,
         [index]: { ...prev[index], message: "", isChecking: true },
@@ -142,6 +164,9 @@ export default function CreateSetPage() {
         term: termToCheck,
         definition: defToCheck,
       }).unwrap();
+
+      // Lưu lại giá trị đã kiểm tra thành công vào cache
+      lastCheckedValues.current[index] = cacheKey;
 
       const data = res.data;
       const termHasDiff = data?.suggestedTerm && termToCheck.length > 0 && data.suggestedTerm.toLowerCase() !== termToCheck.toLowerCase();
@@ -172,6 +197,8 @@ export default function CreateSetPage() {
         delete copy[index];
         return copy;
       });
+    } finally {
+      isCheckingRef.current[index] = false;
     }
   };
 
