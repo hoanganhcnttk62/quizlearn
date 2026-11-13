@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  // output: 'standalone', // Bỏ khi deploy Vercel
   async rewrites() {
     return [
       {

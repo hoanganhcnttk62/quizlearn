@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, LogOut, Menu, Settings, User, Flame } from "lucide-react";
+import { Bell, LogOut, Menu, Settings, User, Flame, ShieldAlert } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -40,6 +40,10 @@ const navigationItems = [
 export function Header() {
   const dispatch = useDispatch();
   const { isSidebarOpen } = useSelector((state: RootState) => state.layout);
+  const { user } = useSelector((state: any) => state.auth);
+  const isAdmin =
+    user?.role?.name?.toLowerCase() === "admin" ||
+    user?.roleId === "3dd54a71-c0f5-4142-a1ff-ec9b08e91dbb";
   const router = useRouter();
   const [logout, setLogout] = useState(false);
 
@@ -248,6 +252,18 @@ export function Header() {
                 </div>
               </HoverCardContent>
             </HoverCard>
+            {/* Admin button if admin */}
+            {isAdmin && (
+              <Button
+                size="sm"
+                variant="default"
+                className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-1.5 rounded-full px-3 py-1 font-medium shadow-sm transition-all"
+                onClick={() => router.push("/admin")}
+              >
+                <ShieldAlert className="w-4 h-4" />
+                <span className="hidden sm:inline">Admin Portal</span>
+              </Button>
+            )}
             {/* User avatar dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -264,6 +280,18 @@ export function Header() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                {isAdmin && (
+                  <>
+                    <DropdownMenuItem
+                      onClick={() => router.push("/admin")}
+                      className="font-semibold text-purple-600 dark:text-purple-400 cursor-pointer"
+                    >
+                      <ShieldAlert className="mr-2 h-4 w-4" />
+                      <span>Admin Dashboard</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem onClick={() => router.push("/profile")}>
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>

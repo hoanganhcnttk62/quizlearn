@@ -2,6 +2,9 @@
   "name": "quizlearn-fe",
   "version": "0.1.0",
   "private": true,
+  "allowScripts": {
+    "sharp": true
+  },
   "scripts": {
     "build": "next build",
     "start": "next start",

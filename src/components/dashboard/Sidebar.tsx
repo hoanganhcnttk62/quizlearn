@@ -1,8 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import { LayoutGrid, Store, Box, Users, Settings, HelpCircle, ChevronLeft, Folder } from "lucide-react";
+import { LayoutGrid, Store, Box, Users, Settings, HelpCircle, ChevronLeft, Folder, ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { useSelector } from "react-redux";
 
 const mainMenuItems = [
   { name: "Overview", icon: LayoutGrid, href: "/dashboard" },
@@ -23,6 +24,10 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const pathName = usePathname();
+  const { user } = useSelector((state: any) => state.auth);
+  const isAdmin =
+    user?.role?.name?.toLowerCase() === "admin" ||
+    user?.roleId === "3dd54a71-c0f5-4142-a1ff-ec9b08e91dbb";
 
   // Cập nhật `current` cho mỗi item dựa trên pathname hiện tại
   const updatedMainMenuItems = mainMenuItems.map((item) => ({
@@ -69,6 +74,33 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto py-4">
         <div className="px-4">
+          {/* Admin Menu */}
+          {isAdmin && (
+            <div className="mb-4">
+              {isOpen && (
+                <p className="text-xs font-semibold text-purple-600 dark:text-purple-400 px-4 mb-2 tracking-wider">
+                  ADMINISTRATION
+                </p>
+              )}
+              <nav className="space-y-1">
+                <Link
+                  href="/admin"
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-2 text-sm font-semibold rounded-lg transition-colors",
+                    pathName.startsWith("/admin")
+                      ? "bg-purple-600 text-white shadow-sm"
+                      : "text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40",
+                    !isOpen && "justify-center px-2"
+                  )}
+                  title={!isOpen ? "Admin Portal" : undefined}
+                >
+                  <ShieldAlert className="w-5 h-5" />
+                  {isOpen && "Admin Dashboard"}
+                </Link>
+              </nav>
+            </div>
+          )}
+
           <div className="mb-2">
             {isOpen && <p className="text-xs font-medium text-muted-foreground px-4 mb-2">MAIN MENU</p>}
             <nav className="space-y-1">
