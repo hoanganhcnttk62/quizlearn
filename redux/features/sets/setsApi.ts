@@ -91,6 +91,14 @@ export const setsApi = apiSlice.injectEndpoints({
                         { type: 'FolderSets' as TagTypes, id }
                       ]
                     : [{ type: 'FolderSets' as TagTypes, id }]
+        }),
+        searchSets: builder.query({
+            query: ({ q = "", scope = "all" }: { q?: string; scope?: string }) => ({
+                url: `set/search?q=${encodeURIComponent(q)}&scope=${encodeURIComponent(scope)}`,
+                method: "GET",
+                credentials: "include" as const,
+            }),
+            providesTags: [{ type: 'AllSets' as TagTypes }]
         })
     }),
 });
@@ -102,4 +110,5 @@ export const {
     useGetAllSetsQuery,
     useGetSetsByUserIdQuery,
     useGetSetByFolderIdQuery,
+    useSearchSetsQuery,
 } = setsApi;

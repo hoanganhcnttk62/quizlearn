@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { LayoutGrid, Settings, HelpCircle, ChevronLeft, Folder, ShieldCheck } from "lucide-react";
+import { LayoutGrid, Search, Settings, HelpCircle, ChevronLeft, Folder, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
@@ -23,11 +23,11 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const mainMenuItems = [
     { name: t("nav.overview"), icon: LayoutGrid, href: "/dashboard" },
     { name: t("nav.folder"), icon: Folder, href: "/folder" },
+    { name: t("common.search").replace("...", ""), icon: Search, href: "/search" },
   ];
 
   const otherMenuItems = [
     { name: t("nav.settings"), icon: Settings, href: "/settings" },
-    { name: t("nav.helpCenter"), icon: HelpCircle, href: "/help" },
   ];
 
   const updatedMainMenuItems = mainMenuItems.map((item) => ({

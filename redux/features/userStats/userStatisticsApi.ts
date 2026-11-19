@@ -29,6 +29,7 @@ export const userStatisticsApi = apiSlice.injectEndpoints({
         method: "GET",
         credentials: "include" as const,
       }),
+      providesTags: ["Streak"],
     }),
     restoreStreak: builder.mutation({
       query: () => ({
@@ -36,6 +37,7 @@ export const userStatisticsApi = apiSlice.injectEndpoints({
         method: "POST",
         credentials: "include" as const,
       }),
+      invalidatesTags: ["Streak"],
     }),
   }),
 });

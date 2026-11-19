@@ -5,7 +5,7 @@ import {
   useCreateOrUpdateUserSessionMutation,
   useGetRandomAnswerChoicesQuery,
 } from "../../../../../redux/features/userSessions/userSessionsApi";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import Protected from "@/hooks/useProtected";
 import { cn } from "@/lib/utils";
@@ -24,7 +24,7 @@ import {
 } from "../../../../../redux/features/userProgresses/userProgressesApi";
 import { useGetCardBySetIdQuery } from "../../../../../redux/features/cards/cardsApi";
 import { Card } from "@/components/ui/card";
-import { Flame, Loader2 } from "lucide-react";
+import { Flame, Loader2, ArrowLeft } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -35,6 +35,7 @@ type Props = {};
 
 const page = (props: Props) => {
   const { t, language } = useLanguage();
+  const router = useRouter();
   const params = useParams();
   const id = params.id;
   const [createOrUpdateUserSession, { isLoading: isCreatingUserSession }] =
@@ -321,6 +322,10 @@ const page = (props: Props) => {
               </button>
               <h1 className="text-xl font-black">{t("study.learnMode")}</h1>
             </div>
+            <Button variant="outline" onClick={() => router.push(`/set/${id}`)}>
+              <ArrowLeft className="mr-2 h-4 w-4 stroke-[2.5]" />
+              {language === "vi" ? "Quay về bộ thẻ" : "Back to Set"}
+            </Button>
           </div>
         </header>
 
@@ -415,18 +420,28 @@ const page = (props: Props) => {
                       </div>
                     )}
 
-                    {isSessionCompleted ? (
-                      <Button className="w-full mt-6" onClick={handleStartOver}>
-                        {t("study.startOver")}
-                      </Button>
-                    ) : (
+                    <div className="flex flex-col sm:flex-row gap-3 mt-6">
                       <Button
-                        className="w-full mt-6"
-                        onClick={resetRemaingCards}
+                        variant="outline"
+                        className="w-full sm:w-auto flex-1 gap-2"
+                        onClick={() => router.push(`/set/${id}`)}
                       >
-                        {language === "vi" ? "Tiếp tục học" : "Continue"}
+                        <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
+                        {language === "vi" ? "Quay về bộ thẻ" : "Back to Set"}
                       </Button>
-                    )}
+                      {isSessionCompleted ? (
+                        <Button className="w-full sm:w-auto flex-1" onClick={handleStartOver}>
+                          {t("study.startOver")}
+                        </Button>
+                      ) : (
+                        <Button
+                          className="w-full sm:w-auto flex-1"
+                          onClick={resetRemaingCards}
+                        >
+                          {language === "vi" ? "Tiếp tục học" : "Continue"}
+                        </Button>
+                      )}
+                    </div>
                   </Card>
                 </div>
               ) : (

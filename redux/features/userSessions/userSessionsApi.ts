@@ -9,6 +9,7 @@ export const userSessionsApi = apiSlice.injectEndpoints({
                 body: data,
                 credentials: "include" as const,
             }),
+            invalidatesTags: ["Streak"],
         }),
         getRandomAnswerChoices: builder.query({
             query: (data) => ({
@@ -31,6 +32,7 @@ export const userSessionsApi = apiSlice.injectEndpoints({
                 body:data,
                 credentials: "include" as const,
             }),
+            invalidatesTags: ["Streak"],
         }),
 
     }),

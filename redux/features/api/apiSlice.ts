@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { userLoggedIn, userLoggedOut } from "../auth/authSlice";
 
 // Define tag types for the entire API
-const tagTypes = ["Card", "Set", "FolderSets", "AllSets", "UserSets"] as const;
+const tagTypes = ["Card", "Set", "FolderSets", "AllSets", "UserSets", "Streak"] as const;
 
 export const apiSlice = createApi({
   reducerPath: "api",

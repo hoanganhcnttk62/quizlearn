@@ -635,7 +635,7 @@ export default function AdminDashboardPage() {
                                 <Folder className="w-4 h-4" />
                               </div>
                               <span className="font-semibold text-foreground">
-                                {f.title}
+                                {f.name || f.title || "—"}
                               </span>
                             </td>
                             <td className="p-3 text-xs text-muted-foreground">

@@ -18,7 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   HoverCard,
   HoverCardContent,
@@ -32,13 +32,15 @@ import { useState } from "react";
 
 export function Header() {
   const { t, language } = useLanguage();
+  const pathname = usePathname();
   const dispatch = useDispatch();
 
   const navigationItems = [
-    { name: t("nav.dashboard"), href: "/dashboard", current: true },
-    { name: t("nav.folders"), href: "/folder", current: false },
-    { name: t("dashboard.createSet"), href: "/create-set", current: false },
-    { name: t("nav.streak"), href: "/streak", current: false },
+    { name: t("nav.dashboard"), href: "/dashboard", current: pathname === "/dashboard" },
+    { name: t("nav.folders"), href: "/folder", current: pathname.startsWith("/folder") },
+    { name: t("common.search").replace("...", ""), href: "/search", current: pathname === "/search" },
+    { name: t("dashboard.createSet"), href: "/create-set", current: pathname === "/create-set" },
+    { name: t("nav.streak"), href: "/streak", current: pathname === "/streak" },
   ];
 
   const weekDays =
