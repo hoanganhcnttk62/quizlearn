@@ -18,7 +18,7 @@ export const foldersApi = apiSlice.injectEndpoints({
         body: data,
         credentials: "include" as const,
       }),
-      invalidatesTags: ["Folder"],
+      invalidatesTags: ["Folder", "FolderSets", "AllSets", "Set"],
     }),
     deleteFolder: builder.mutation({
       query: (id: string) => ({

@@ -196,6 +196,30 @@ export default function DashboardPage() {
     }
   }
 
+  const handleToggleSetPrivacy = async (set: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const nextPublic = !set.isPublic;
+    try {
+      await updateSet({
+        id: set.id,
+        isPublic: nextPublic,
+      }).unwrap();
+      toast.success(
+        nextPublic
+          ? language === "vi"
+            ? `Đã chuyển "${set.title}" sang Công khai`
+            : `"${set.title}" is now Public`
+          : language === "vi"
+          ? `Đã chuyển "${set.title}" sang Riêng tư`
+          : `"${set.title}" is now Private`
+      );
+      refetch();
+    } catch (error) {
+      console.error("Failed to toggle set privacy:", error);
+      toast.error(t("common.error"));
+    }
+  };
+
   const handlePublishDraft = async (set: any, e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent navigating to set page
 
@@ -399,17 +423,28 @@ export default function DashboardPage() {
                       >
                         <div className="flex items-center gap-2.5 flex-wrap">
                           <span className="font-black text-lg text-neo-ink">{set.title}</span>
-                          <Badge variant={set.isPublic ? "blue" : "neutral"} className="text-[10px]">
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant={set.isPublic ? "secondary" : "outline"}
+                            className="h-7 px-2.5 text-[11px] gap-1"
+                            onClick={(e) => handleToggleSetPrivacy(set, e)}
+                            title={
+                              language === "vi"
+                                ? "Bấm để chuyển đổi Công khai / Riêng tư"
+                                : "Click to toggle Public / Private"
+                            }
+                          >
                             {set.isPublic ? (
                               <>
-                                <Globe className="w-3 h-3" /> {t("common.public")}
+                                <Globe className="w-3 h-3 stroke-[2.5]" /> {t("common.public")}
                               </>
                             ) : (
                               <>
-                                <Lock className="w-3 h-3" /> {t("common.private")}
+                                <Lock className="w-3 h-3 stroke-[2.5]" /> {t("common.private")}
                               </>
                             )}
-                          </Badge>
+                          </Button>
                         </div>
 
                         <div className="flex items-center gap-2">
@@ -460,43 +495,70 @@ export default function DashboardPage() {
                         className="flex justify-between items-center p-4 rounded-xl border-2 border-border bg-neo-yellow text-neo-ink shadow-neo-sm hover:-translate-y-[1px] hover:shadow-neo transition-all cursor-pointer"
                         onClick={() => router.push(`/set/${set.id}`)}
                       >
-                        <div className="flex items-center gap-2">
-                          <span className="text-white">{set.title}</span>
-                          <span className="text-xs bg-gray-800/30 rounded px-2 py-0.5">DRAFT</span>
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                          <span className="font-black text-lg text-neo-ink">{set.title}</span>
+                          <Badge variant="outline" className="text-[10px]">
+                            {language === "vi" ? "BẢN NHÁP" : "DRAFT"}
+                          </Badge>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant={set.isPublic ? "secondary" : "outline"}
+                            className="h-7 px-2.5 text-[11px] gap-1"
+                            onClick={(e) => handleToggleSetPrivacy(set, e)}
+                            title={
+                              language === "vi"
+                                ? "Bấm để chuyển đổi Công khai / Riêng tư"
+                                : "Click to toggle Public / Private"
+                            }
+                          >
+                            {set.isPublic ? (
+                              <>
+                                <Globe className="w-3 h-3 stroke-[2.5]" /> {t("common.public")}
+                              </>
+                            ) : (
+                              <>
+                                <Lock className="w-3 h-3 stroke-[2.5]" /> {t("common.private")}
+                              </>
+                            )}
+                          </Button>
                         </div>
 
                         <div className="flex items-center gap-2">
                           <Button
-                            variant="ghost"
+                            variant="accent"
                             size="sm"
                             onClick={(e) => handlePublishDraft(set, e)}
-                            className="text-white text-xs border border-white/50 px-2"
+                            className="text-xs px-3"
                           >
-                            Publish
+                            {language === "vi" ? "Xuất bản" : "Publish"}
                           </Button>
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="icon"
+                            className="h-9 w-9"
                             onClick={(e) => handleEditCardsOfSet(set, e)}
-                            title="Edit Cards"
+                            title={language === "vi" ? "Chỉnh sửa thẻ" : "Edit Cards"}
                           >
-                            <PencilLine className="h-4 w-4 text-white" />
+                            <PencilLine className="h-4 w-4" />
                           </Button>
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="icon"
+                            className="h-9 w-9"
                             onClick={(e) => handleOpenUpdateDialog(set, e)}
-                            title="Edit Set"
+                            title={language === "vi" ? "Chỉnh sửa bộ thẻ" : "Edit Set"}
                           >
-                            <Edit className="h-4 w-4 text-white" />
+                            <Edit className="h-4 w-4" />
                           </Button>
                           <Button
-                            variant="ghost"
+                            variant="destructive"
                             size="icon"
+                            className="h-9 w-9"
                             onClick={(e) => handleDeleteSet(set.id, e)}
-                            title="Delete Set"
+                            title={t("common.delete")}
                           >
-                            <Trash className="h-4 w-4 text-white" />
+                            <Trash className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>
@@ -504,10 +566,6 @@ export default function DashboardPage() {
                   )}
                 </TabsContent>
               </Tabs>
-
-              <div className="fixed bottom-4 right-4">
-                <Button variant="destructive">Remove ads</Button>
-              </div>
             </div>
           </div>
         </div>
