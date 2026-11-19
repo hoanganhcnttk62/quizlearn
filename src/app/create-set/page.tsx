@@ -16,7 +16,12 @@ import Image from "next/image";
 import { useSearchImageMutation } from "../../../redux/features/image/imageApi";
 import { toast } from "sonner";
 import { Sparkles, Loader2, AlertCircle, Check } from "lucide-react";
-import { useProofreadCardsMutation, useCheckSingleTermMutation } from "../../../redux/features/ai/aiApi";
+import {
+  useProofreadCardsMutation,
+  useCheckSingleTermMutation,
+  LANGUAGE_OPTIONS,
+  SupportedLanguage,
+} from "../../../redux/features/ai/aiApi";
 import { SpeakButton } from "@/components/common/SpeakButton";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
@@ -26,6 +31,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Type for image search results
 interface ImageResult {
@@ -96,6 +108,10 @@ export default function CreateSetPage() {
   const [lastSaveTime, setLastSaveTime] = useState<Date | null>(null);
   const [timeSinceLastSave, setTimeSinceLastSave] = useState<string>("0s");
 
+  // Language settings at set level for AI checking
+  const [termLang, setTermLang] = useState<SupportedLanguage>("auto");
+  const [defLang, setDefLang] = useState<SupportedLanguage>("auto");
+
   // States for image search functionality
   const [activeImageSearchIndex, setActiveImageSearchIndex] = useState<number | null>(null);
   const [imageSearchResults, setImageSearchResults] = useState<ImageResult[]>([]);
@@ -165,6 +181,8 @@ export default function CreateSetPage() {
       const res = await checkSingleTerm({
         term: termToCheck,
         definition: defToCheck,
+        termLang,
+        defLang,
       }).unwrap();
 
       // Lưu lại giá trị đã kiểm tra thành công vào cache
@@ -217,6 +235,8 @@ export default function CreateSetPage() {
     try {
       const res = await proofreadCards({
         cards: validTerms.map((t) => ({ id: t.id, term: t.term, definition: t.definition })),
+        termLang,
+        defLang,
       }).unwrap();
 
       const issues = res.issues || [];
@@ -605,6 +625,62 @@ export default function CreateSetPage() {
                     value={description}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
                   />
+                </div>
+
+                {/* Language Settings for Term & Definition */}
+                <div className="pt-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {language === "vi" ? "Ngôn ngữ thuật ngữ" : "Term Language"}
+                      </label>
+                      <Select value={termLang} onValueChange={(v) => setTermLang(v as SupportedLanguage)}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {LANGUAGE_OPTIONS.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>
+                              <span className="flex items-center gap-2">
+                                <span>{opt.flag}</span>
+                                <span>{opt.label}</span>
+                              </span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {language === "vi" ? "Ngôn ngữ định nghĩa" : "Definition Language"}
+                      </label>
+                      <Select value={defLang} onValueChange={(v) => setDefLang(v as SupportedLanguage)}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {LANGUAGE_OPTIONS.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>
+                              <span className="flex items-center gap-2">
+                                <span>{opt.flag}</span>
+                                <span>{opt.label}</span>
+                              </span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {termLang !== "auto" && defLang !== "auto" && termLang !== defLang && (
+                    <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1.5">
+                      <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+                      {language === "vi"
+                        ? "Chế độ học từ vựng chéo ngôn ngữ — AI sẽ không báo lỗi khác biệt ngôn ngữ giữa hai vế."
+                        : "Cross-language mode active — AI will not flag language differences between term and definition."}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-4">
