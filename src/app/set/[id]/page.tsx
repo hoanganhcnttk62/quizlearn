@@ -575,19 +575,19 @@ export default function StudySetPage() {
           <Dialog open={showModeSelector} onOpenChange={setShowModeSelector}>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>Choose Study Mode</DialogTitle>
+                <DialogTitle>{t("study.chooseStudyMode")}</DialogTitle>
                 <DialogDescription>
-                  Select how you want to study this set
+                  {t("study.chooseStudyModeDesc")}
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <RadioGroup
                   defaultValue="multiple-choice"
-                  className="grid grid-cols-1 gap-4"
+                  className="grid grid-cols-1 gap-3"
                   value={learnMode}
                   onValueChange={(value: LearnMode) => setLearnMode(value)}
                 >
-                  <div className="flex items-center space-x-2 border p-4 rounded-lg hover:bg-gray-50 cursor-pointer">
+                  <div className="flex items-center space-x-3 border-2 border-border p-4 rounded-xl bg-card hover:bg-neo-yellow/25 cursor-pointer shadow-neo-xs transition-colors">
                     <RadioGroupItem
                       value="multiple-choice"
                       id="multiple-choice"
@@ -596,33 +596,33 @@ export default function StudySetPage() {
                       htmlFor="multiple-choice"
                       className="flex flex-col cursor-pointer flex-grow"
                     >
-                      <span className="font-medium">Multiple Choice</span>
-                      <span className="text-sm text-gray-500">
-                        Test your knowledge with multiple choice questions
+                      <span className="font-extrabold">{t("study.multipleChoice")}</span>
+                      <span className="text-xs font-semibold text-muted-foreground">
+                        {t("study.multipleChoiceDesc")}
                       </span>
                     </Label>
                   </div>
-                  <div className="flex items-center space-x-2 border p-4 rounded-lg hover:bg-gray-50 cursor-pointer">
+                  <div className="flex items-center space-x-3 border-2 border-border p-4 rounded-xl bg-card hover:bg-neo-blue/25 cursor-pointer shadow-neo-xs transition-colors">
                     <RadioGroupItem value="write" id="write" />
                     <Label
                       htmlFor="write"
                       className="flex flex-col cursor-pointer flex-grow"
                     >
-                      <span className="font-medium">Write</span>
-                      <span className="text-sm text-gray-500">
-                        Practice writing the definitions
+                      <span className="font-extrabold">{t("study.write")}</span>
+                      <span className="text-xs font-semibold text-muted-foreground">
+                        {t("study.writeDesc")}
                       </span>
                     </Label>
                   </div>
-                  <div className="flex items-center space-x-2 border p-4 rounded-lg hover:bg-gray-50 cursor-pointer">
+                  <div className="flex items-center space-x-3 border-2 border-border p-4 rounded-xl bg-card hover:bg-neo-mint/25 cursor-pointer shadow-neo-xs transition-colors">
                     <RadioGroupItem value="flashcard" id="flashcard" />
                     <Label
                       htmlFor="flashcard"
                       className="flex flex-col cursor-pointer flex-grow"
                     >
-                      <span className="font-medium">Flashcard</span>
-                      <span className="text-sm text-gray-500">
-                        Study with interactive flashcards
+                      <span className="font-extrabold">{t("study.flashcards")}</span>
+                      <span className="text-xs font-semibold text-muted-foreground">
+                        {t("study.flashcardDesc")}
                       </span>
                     </Label>
                   </div>
@@ -633,7 +633,7 @@ export default function StudySetPage() {
                     className="px-8"
                     onClick={() => handleLearnModeSelect(learnMode)}
                   >
-                    Start
+                    {t("study.start")}
                   </Button>
                 </div>
               </div>
@@ -646,15 +646,15 @@ export default function StudySetPage() {
           >
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>You have finished this set</DialogTitle>
+                <DialogTitle>{t("study.finishedSetTitle")}</DialogTitle>
                 <DialogDescription>
-                  Would you like to start over?
+                  {t("study.finishedSetDesc")}
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="flex justify-end mt-4">
                   <Button className="px-8" onClick={handleStartOver}>
-                    Start Over
+                    {t("study.startOver")}
                   </Button>
                 </div>
               </div>

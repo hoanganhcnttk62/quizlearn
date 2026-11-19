@@ -580,7 +580,7 @@ export default function CreateSetPage() {
                   />
                 </svg>
               </button>
-              <h1 className="text-xl font-semibold">Create New Set</h1>
+              <h1 className="text-xl font-black">{t("dashboard.createSet")}</h1>
             </div>
             <div className="flex items-center text-sm text-gray-500">
               <span className="mr-2">{autosaveStatus}</span>
@@ -731,7 +731,7 @@ export default function CreateSetPage() {
                             )}
                           </div>
                           <Input
-                            placeholder="Enter term"
+                            placeholder={t("set.termPlaceholder")}
                             value={term.term}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                               handleTermChange(index, "term", e.target.value)
@@ -793,7 +793,7 @@ export default function CreateSetPage() {
                             )}
                           </div>
                           <Input
-                            placeholder="Enter definition"
+                            placeholder={t("set.definitionPlaceholder")}
                             value={term.definition}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                               handleTermChange(
@@ -900,7 +900,7 @@ export default function CreateSetPage() {
                           {/* Custom search bar */}
                           <div className="mb-4 flex gap-2">
                             <Input
-                              placeholder="Search for images..."
+                              placeholder={t("set.searchImagePlaceholder")}
                               value={imageSearchQuery}
                               onChange={(e) => setImageSearchQuery(e.target.value)}
                               className="flex-grow"
@@ -945,7 +945,7 @@ export default function CreateSetPage() {
                   <Button variant="outline" onClick={() => router.back()}>
                     Cancel
                   </Button>
-                  <Button onClick={handleSubmit}>Create Set</Button>
+                  <Button onClick={handleSubmit}>{t("dashboard.createSet")}</Button>
                 </div>
               </div>
             </div>

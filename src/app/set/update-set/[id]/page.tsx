@@ -894,7 +894,7 @@ export default function UpdateSetPage() {
                               )}
                             </div>
                             <Input
-                              placeholder="Enter term"
+                              placeholder={t("set.termPlaceholder")}
                               value={term.term}
                               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                 handleTermChange(index, "term", e.target.value)
@@ -953,7 +953,7 @@ export default function UpdateSetPage() {
                               </label>
                             </div>
                             <Input
-                              placeholder="Enter definition"
+                              placeholder={t("set.definitionPlaceholder")}
                               value={term.definition}
                               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                 handleTermChange(
@@ -1105,7 +1105,7 @@ export default function UpdateSetPage() {
                               className="gap-1"
                             >
                               <SaveIcon className="h-4 w-4" />
-                              {!term.id ? "Create Card" : "Save Changes"}
+                              {!term.id ? t("set.createCard") : t("set.saveChanges")}
                             </Button>
                           </div>
                         )}
@@ -1116,16 +1116,16 @@ export default function UpdateSetPage() {
 
                 <div className="flex justify-end gap-4 pt-4">
                   <Button variant="outline" onClick={() => router.back()}>
-                    Cancel
+                    {t("common.cancel")}
                   </Button>
                   <Button 
                     onClick={handleSaveAllChanges}
                     disabled={modifiedCards.size === 0 && terms.every(t => t.id)}
                   >
-                    Save All Changes
+                    {t("set.saveAllChanges")}
                   </Button>
-                  <Button onClick={handleFinish}>
-                    Finish Editing
+                  <Button variant="accent" onClick={handleFinish}>
+                    {t("set.finishEditing")}
                   </Button>
                 </div>
               </div>

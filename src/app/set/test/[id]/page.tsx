@@ -213,7 +213,9 @@ export default function TestModePage() {
     if (question.type !== "yes-no") return null;
     return (
       <div className="space-y-4 w-full">
-        <Label>Choose the answer</Label>
+        <Label>
+          {language === "vi" ? "Chọn câu trả lời đúng:" : "Choose the answer"}
+        </Label>
         <RadioGroup
           value={String(userAnswers[question.id])}
           onValueChange={(value) =>
@@ -246,10 +248,10 @@ export default function TestModePage() {
         />
         <div className="max-w-3xl mx-auto py-8 px-4 space-y-6">
           {isLoadingTestData || !data ? (
-            <div>Loading...</div>
+            <div>{t("common.loading")}</div>
           ) : !showResults ? (
             <>
-              <h1 className="text-2xl font-bold mb-6">Test Mode</h1>
+              <h1 className="text-2xl font-black mb-6">{t("study.testMode")}</h1>
 
               {data?.questions.map((question, index) => (
                 <Card key={question.id} className="p-4">
@@ -258,7 +260,7 @@ export default function TestModePage() {
                       <div className="space-y-4">
                         <div className="flex justify-between items-center">
                           <span className="font-semibold text-lg">
-                            Question {index + 1}
+                            {language === "vi" ? `Câu ${index + 1}` : `Question ${index + 1}`}
                           </span>
                           <span className="text-sm text-gray-500">
                             {index + 1} of {data.questions.length}

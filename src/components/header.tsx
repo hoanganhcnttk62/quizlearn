@@ -30,18 +30,21 @@ import { Button } from "@/components/ui/button";
 import { useLogOutQuery } from "../../redux/features/auth/authApi";
 import { useState } from "react";
 
-const navigationItems = [
-  { name: "Dashboard", href: "/dashboard", current: true },
-  { name: "Project", href: "/project", current: false },
-  { name: "Clients", href: "/clients", current: false },
-  { name: "Quotes", href: "/quotes", current: false },
-  { name: "Meeting Schedule", href: "/meetings", current: false },
-  { name: "Notes", href: "/notes", current: false },
-];
-
 export function Header() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const dispatch = useDispatch();
+
+  const navigationItems = [
+    { name: t("nav.dashboard"), href: "/dashboard", current: true },
+    { name: t("nav.folders"), href: "/folder", current: false },
+    { name: t("dashboard.createSet"), href: "/create-set", current: false },
+    { name: t("nav.streak"), href: "/streak", current: false },
+  ];
+
+  const weekDays =
+    language === "vi"
+      ? ["CN", "T2", "T3", "T4", "T5", "T6", "T7"]
+      : ["S", "M", "T", "W", "T", "F", "S"];
   const { isSidebarOpen } = useSelector((state: RootState) => state.layout);
   const { user } = useSelector((state: any) => state.auth);
   const isAdmin =
@@ -199,7 +202,7 @@ export function Header() {
                   {t("header.streakSubtext")}
                 </p>
                 <div className="flex justify-between mb-3 p-2 rounded-lg border-2 border-border bg-muted/50">
-                  {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
+                  {weekDays.map((day, index) => (
                     <div key={index} className="flex flex-col items-center">
                       {streakDays[index] ? (
                         <Flame className="text-neo-orange fill-neo-yellow w-4 h-4 mb-1" />

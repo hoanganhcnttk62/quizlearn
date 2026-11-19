@@ -340,7 +340,9 @@ const page = (props: Props) => {
               {showTestResults ? (
                 <div className="w-full max-w-2xl">
                   <Card className="p-6">
-                    <h2 className="text-xl font-bold mb-4">Your Results</h2>
+                    <h2 className="text-xl font-black mb-4">
+                      {language === "vi" ? "Kết quả của bạn" : "Your Results"}
+                    </h2>
                     <div className="text-center mb-6">
                       <p className="text-3xl font-bold">
                         {totalCorrect} /{" "}
@@ -348,7 +350,9 @@ const page = (props: Props) => {
                           ? cards.length
                           : totalCardsInSession}
                       </p>
-                      <p className="text-gray-500">correct answers</p>
+                      <p className="text-muted-foreground font-semibold">
+                        {language === "vi" ? "câu trả lời đúng" : "correct answers"}
+                      </p>
                     </div>
                     {/* Display answered cards */}
                     {cardResult.length > 0 && (

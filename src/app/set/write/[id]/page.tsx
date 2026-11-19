@@ -350,9 +350,9 @@ export default function WriteModePage() {
           <div className="max-w-4xl mx-auto">
             <div className="mb-6">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium">Progress</span>
-                <span className="text-sm font-medium">
-                  {currentCardIndex + 1} of {cards.length} cards
+                <span className="text-sm font-extrabold">{t("study.progress")}</span>
+                <span className="text-sm font-extrabold">
+                  {t("study.cardOf", { current: currentCardIndex + 1, total: cards.length })}
                 </span>
               </div>
               <Progress value={progress} className="h-2" />

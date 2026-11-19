@@ -58,9 +58,12 @@ export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
 
   // Current month and year
-  const currentMonth = currentDate.toLocaleString('default', { month: 'long' });
+  const currentMonth = currentDate.toLocaleString(language === "vi" ? "vi-VN" : "en-US", { month: "long" });
   const currentYear = currentDate.getFullYear();
-  const daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"];
+  const daysOfWeek =
+    language === "vi"
+      ? ["CN", "T2", "T3", "T4", "T5", "T6", "T7"]
+      : ["S", "M", "T", "W", "T", "F", "S"];
 
   // Get streak days for the selected month
   const getStreakDaysForMonth = (month: number, year: number) => {
@@ -123,7 +126,7 @@ export default function DashboardPage() {
             {/* Widgets Section */}
             <div className="mb-8">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">Widgets</h2>
+                <h2 className="text-xl font-black">{t("dashboard.widgets")}</h2>
                 <Button variant="ghost" size="sm">
                   <ChevronUp className="h-5 w-5" />
                 </Button>
