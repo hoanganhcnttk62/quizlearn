@@ -530,24 +530,32 @@ export default function StudySetPage() {
               </Card>
             </div>
             <div className="flex gap-4 mt-6">
-              <Button onClick={handlePrevCard}>{language === "vi" ? "Thẻ trước" : "Previous"}</Button>
-              <Button onClick={handleNextCard}>{language === "vi" ? "Thẻ tiếp theo" : "Next"}</Button>
+              <Button variant="outline" onClick={handlePrevCard}>
+                {language === "vi" ? "Thẻ trước" : "Previous"}
+              </Button>
+              <Button onClick={handleNextCard}>
+                {language === "vi" ? "Thẻ tiếp theo" : "Next"}
+              </Button>
             </div>
-            <div className="mt-4 text-sm text-gray-500">
+            <div className="mt-4 px-3 py-1 rounded-lg border-2 border-border bg-muted text-xs font-extrabold text-foreground shadow-neo-xs">
               {language === "vi"
                 ? `Thẻ ${currentCardIndex + 1} / ${cards.length + answeredCards.length}`
                 : `Card ${currentCardIndex + 1} of ${cards.length + answeredCards.length}`}
             </div>
-            <div className="flex gap-6 mt-12">
+            <div className="flex flex-wrap justify-center gap-5 mt-10">
               <Button
                 onClick={() => handleModeChange("learn")}
-                className="px-8 py-8 text-xl font-bold bg-white border border-primary text-primary shadow-xl hover:shadow-2xl hover:bg-primary hover:text-white transition-all duration-200 rounded-xl"
+                size="lg"
+                variant="default"
+                className="px-10 py-7 text-xl font-black rounded-xl shadow-neo"
               >
                 {language === "vi" ? "Chế độ Học tập" : "Learn Mode"}
               </Button>
               <Button
                 onClick={() => handleModeChange("test")}
-                className="px-8 py-8 text-xl font-bold bg-white border border-primary text-primary shadow-xl hover:shadow-2xl hover:bg-primary hover:text-white transition-all duration-200 rounded-xl"
+                size="lg"
+                variant="secondary"
+                className="px-10 py-7 text-xl font-black rounded-xl shadow-neo"
               >
                 {language === "vi" ? "Chế độ Kiểm tra" : "Test Mode"}
               </Button>

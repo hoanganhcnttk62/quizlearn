@@ -4,45 +4,77 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
+    /* Neo-Brutalism Core Surfaces */
+    --background: 48 100% 98%;          /* #FFFDF5 Warm Cream Canvas */
+    --foreground: 0 0% 7%;              /* #111111 Ink Black */
+    --card: 0 0% 100%;                  /* #FFFFFF Pure White */
+    --card-foreground: 0 0% 7%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
-    --primary: 0 0% 0%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 0%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 89%;
-    --input: 0 0% 89%;
-    --ring: 0 0% 0%;
+    --popover-foreground: 0 0% 7%;
+
+    /* Neo-Brutalism Semantic Palette */
+    --primary: 52 100% 50%;             /* #FFDE00 Electric Yellow */
+    --primary-foreground: 0 0% 7%;
+    --secondary: 199 95% 60%;           /* #38BDF8 Sky Cyan */
+    --secondary-foreground: 0 0% 7%;
+    --muted: 40 35% 92%;                /* #F3EDE0 Soft Sand */
+    --muted-foreground: 0 0% 32%;       /* #525252 Charcoal Gray */
+    --accent: 142 71% 58%;              /* #4ADE80 Neo Mint */
+    --accent-foreground: 0 0% 7%;
+    --destructive: 0 100% 67%;          /* #FF5757 Neo Coral Red */
+    --destructive-foreground: 0 0% 7%;
+
+    /* Neo-Brutalism Borders & Shadows */
+    --border: 0 0% 7%;                  /* #111111 Bold Black Border */
+    --input: 0 0% 7%;
+    --ring: 0 0% 7%;
     --radius: 0.5rem;
+
+    /* Named Neo Tokens */
+    --neo-yellow: #FFDE00;
+    --neo-blue: #38BDF8;
+    --neo-mint: #4ADE80;
+    --neo-coral: #FF6B6B;
+    --neo-orange: #FB923C;
+    --neo-pink: #FF90E8;
+    --neo-cream: #FFFDF5;
+    --neo-ink: #111111;
+    --neo-shadow: #111111;
   }
 
   .dark {
-    --background: 0 0% 10%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 16%;
-    --card-foreground: 0 0% 100%;
-    --border: 0 0% 30%;
-    --input: 0 0% 16%;
-    --primary: 142 76% 56%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 22%;
-    --secondary-foreground: 0 0% 100%;
-    --accent: 0 0% 22%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --ring: 142 76% 56%;
-    --radius: 0.75rem;
+    --background: 240 6% 10%;           /* #18181B Deep Ink */
+    --foreground: 48 100% 98%;          /* #FFFDF5 Warm Cream */
+    --card: 240 5% 15%;                 /* #242429 Elevated Dark Surface */
+    --card-foreground: 48 100% 98%;
+    --popover: 240 5% 15%;
+    --popover-foreground: 48 100% 98%;
+
+    --primary: 52 100% 50%;             /* #FFDE00 Electric Yellow */
+    --primary-foreground: 0 0% 7%;
+    --secondary: 199 95% 60%;           /* #38BDF8 Sky Cyan */
+    --secondary-foreground: 0 0% 7%;
+    --muted: 240 5% 22%;
+    --muted-foreground: 40 15% 75%;
+    --accent: 142 71% 58%;              /* #4ADE80 Neo Mint */
+    --accent-foreground: 0 0% 7%;
+    --destructive: 0 90% 62%;
+    --destructive-foreground: 0 0% 7%;
+
+    --border: 48 100% 96%;              /* Crisp Off-White Borders in Dark Mode */
+    --input: 48 100% 96%;
+    --ring: 52 100% 50%;
+    --radius: 0.5rem;
+
+    --neo-yellow: #FFDE00;
+    --neo-blue: #38BDF8;
+    --neo-mint: #4ADE80;
+    --neo-coral: #FF6B6B;
+    --neo-orange: #FB923C;
+    --neo-pink: #FF90E8;
+    --neo-cream: #18181B;
+    --neo-ink: #FFFDF5;
+    --neo-shadow: #000000;
   }
 }
 
@@ -51,7 +83,29 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased selection:bg-[#FFDE00] selection:text-[#111111];
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-extrabold tracking-tight;
+  }
+}
+
+@layer utilities {
+  .neo-border {
+    @apply border-2 border-border;
+  }
+  .neo-border-3 {
+    @apply border-[3px] border-border;
+  }
+  .neo-card {
+    @apply rounded-xl border-2 border-border bg-card text-card-foreground shadow-neo;
+  }
+  .neo-press {
+    @apply transition-all duration-150 hover:-translate-x-[1px] hover:-translate-y-[1px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none;
+  }
+  .neo-dots-bg {
+    background-image: radial-gradient(hsl(var(--border) / 0.18) 1.25px, transparent 1.25px);
+    background-size: 20px 20px;
   }
 }
 
@@ -70,4 +124,4 @@
 
 .rotate-y-180 {
   transform: rotateY(180deg);
-} 
+}

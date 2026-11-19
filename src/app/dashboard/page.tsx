@@ -118,7 +118,7 @@ export default function DashboardPage() {
   return (
     <Protected>
       <PageLayout>
-        <div className="dark:bg-background bg-gray-50 min-h-screen py-8">
+        <div className="min-h-screen py-8">
           <div className=" mx-auto px-6">
             {/* Widgets Section */}
             <div className="mb-8">
@@ -129,7 +129,7 @@ export default function DashboardPage() {
                 </Button>
               </div>
 
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Column - Study Lists */}
                 <Card className="p-6 col-span-1">
                   <Tabs defaultValue="studying" className="w-full">
@@ -257,10 +257,10 @@ export default function DashboardPage() {
                   </div>
                 </Card>
 
-                {/* Right Column - User Profile */}
+                    {/* Right Column - User Profile */}
                 <Card className="p-6 col-span-1">
                   <div className="flex flex-col items-center text-center">
-                    <div className="w-24 h-24 rounded-full overflow-hidden mb-4">
+                    <div className="w-24 h-24 rounded-2xl border-2 border-border bg-neo-blue shadow-neo-sm overflow-hidden mb-4">
                       <Image
                         src="/avatar-placeholder.svg"
                         alt="User profile"
@@ -270,36 +270,51 @@ export default function DashboardPage() {
                       />
                     </div>
 
-                    <h3 className="text-lg font-bold mb-1">{user.username}</h3>
-                    <p className="text-sm text-gray-500 mb-4">{user.email} | Joined {formatDate(user.createdAt)}</p>
+                    <h3 className="text-xl font-black mb-1">{user.username}</h3>
+                    <p className="text-xs font-semibold text-muted-foreground mb-5">
+                      {user.email} | {t("dashboard.joined")} {formatDate(user.createdAt)}
+                    </p>
 
-                    <div className="w-full mb-4">
+                    <div className="w-full mb-5 p-3.5 rounded-xl border-2 border-border bg-muted/40">
                       <div className="flex justify-between items-center mb-2">
-                        <h4 className="font-medium">Level {user.level}</h4>
-                        <div className="flex items-center gap-1 bg-purple-100 text-purple-600 px-2 py-1 rounded-full">
-                          <span className="text-xs">{user.level + 1}</span>
+                        <h4 className="font-extrabold text-sm">
+                          {t("dashboard.level")} {user.level}
+                        </h4>
+                        <div className="flex items-center gap-1 bg-neo-yellow text-neo-ink border-2 border-border px-2.5 py-0.5 rounded-md shadow-neo-xs">
+                          <span className="text-xs font-black">Lv.{user.level + 1}</span>
                         </div>
                       </div>
 
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-purple-600 h-2 rounded-full" style={{ width: `${percentToNextLevel}%` }}></div>
+                      <div className="w-full bg-card border-2 border-border rounded-lg h-3.5 overflow-hidden">
+                        <div
+                          className="bg-neo-mint h-full border-r-2 border-border transition-all"
+                          style={{ width: `${Math.min(percentToNextLevel || 0, 100)}%` }}
+                        />
                       </div>
 
-                      <p className="text-sm text-gray-500 mt-1">{user.experiencePoints}/{user.expToNextLevel} XP</p>
+                      <p className="text-xs font-bold text-muted-foreground mt-1.5">
+                        {user.experiencePoints}/{user.expToNextLevel} {t("dashboard.xp")}
+                      </p>
                     </div>
 
                     {/* Streak Information */}
-                    <div className="w-full mb-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <h4 className="font-medium">Streak</h4>
-                        <div className="flex items-center gap-1 bg-orange-100 text-orange-600 px-2 py-1 rounded-full">
-                          <span className="text-xs">{currentStreak} days</span>
+                    <div className="w-full mb-5 p-3.5 rounded-xl border-2 border-border bg-neo-orange/20">
+                      <div className="flex justify-between items-center mb-1.5">
+                        <h4 className="font-extrabold text-sm">{t("dashboard.streak")}</h4>
+                        <div className="flex items-center gap-1 bg-neo-orange text-neo-ink border-2 border-border px-2.5 py-0.5 rounded-md shadow-neo-xs">
+                          <span className="text-xs font-black">
+                            🔥 {currentStreak} {t("dashboard.days")}
+                          </span>
                         </div>
                       </div>
-                      <p className="text-sm text-gray-500">Total streak: {totalStreakLength} days</p>
+                      <p className="text-xs font-bold text-muted-foreground text-left">
+                        {t("dashboard.totalStreak", { count: totalStreakLength })}
+                      </p>
                     </div>
 
-                    <Button variant="outline" className="w-full">View badges</Button>
+                    <Button variant="secondary" className="w-full" onClick={() => router.push("/streak")}>
+                      {t("dashboard.viewBadges")}
+                    </Button>
                   </div>
                 </Card>
               </div>

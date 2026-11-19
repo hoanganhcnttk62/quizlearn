@@ -22,7 +22,7 @@ export function PageLayout({ children, className }: PageLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background neo-dots-bg text-foreground">
       {/* Header */}
       <Header />
       
@@ -35,8 +35,8 @@ export function PageLayout({ children, className }: PageLayoutProps) {
       {/* Main Content */}
       <div
         className={cn(
-          "transition-all duration-300 pt-16",
-          isSidebarOpen ? "pl-64" : "pl-20",
+          "transition-all duration-300 pt-16 pl-0",
+          isSidebarOpen ? "md:pl-64" : "md:pl-20",
           className
         )}
       >

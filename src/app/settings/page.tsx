@@ -71,9 +71,9 @@ export default function SettingsPage() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="space-y-2">
-                      <Label>{t("settings.theme")}</Label>
-                      <div className="p-3 border rounded-md flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">
+                      <Label className="font-extrabold">{t("settings.theme")}</Label>
+                      <div className="p-3.5 border-2 border-border rounded-xl bg-muted/40 shadow-neo-xs flex items-center justify-between">
+                        <span className="text-sm font-semibold text-muted-foreground">
                           {language === "vi" ? "Chuyển đổi giao diện Sáng / Tối" : "Switch between Light and Dark mode"}
                         </span>
                         <ThemeToggle />
@@ -81,10 +81,10 @@ export default function SettingsPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label>{t("settings.language")}</Label>
-                      <p className="text-xs text-muted-foreground">{t("settings.languageDesc")}</p>
-                      <div className="p-3 border rounded-md flex items-center justify-between">
-                        <span className="text-sm font-medium">
+                      <Label className="font-extrabold">{t("settings.language")}</Label>
+                      <p className="text-xs font-semibold text-muted-foreground">{t("settings.languageDesc")}</p>
+                      <div className="p-3.5 border-2 border-border rounded-xl bg-muted/40 shadow-neo-xs flex items-center justify-between">
+                        <span className="text-sm font-extrabold">
                           {language === "vi" ? "Tiếng Việt (Mặc định)" : "English (Default)"}
                         </span>
                         <LanguageToggle variant="pill" />

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Globe, Check } from "lucide-react";
-import { useLanguage, Language } from "@/i18n/LanguageContext";
+import { useLanguage } from "@/i18n/LanguageContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +24,7 @@ export function LanguageToggle({ variant = "dropdown", className }: LanguageTogg
     return (
       <div
         className={cn(
-          "inline-flex items-center rounded-full p-0.5 bg-muted/80 border border-border text-xs font-semibold select-none",
+          "inline-flex items-center rounded-lg p-0.5 bg-card border-2 border-border shadow-neo-xs text-xs font-extrabold select-none",
           className
         )}
       >
@@ -32,10 +32,10 @@ export function LanguageToggle({ variant = "dropdown", className }: LanguageTogg
           type="button"
           onClick={() => setLanguage("vi")}
           className={cn(
-            "px-2.5 py-1 rounded-full transition-all flex items-center gap-1",
+            "px-2.5 py-1 rounded-md transition-all flex items-center gap-1 border-2",
             language === "vi"
-              ? "bg-background text-foreground shadow-xs"
-              : "text-muted-foreground hover:text-foreground"
+              ? "bg-neo-yellow text-neo-ink border-border shadow-neo-xs"
+              : "border-transparent text-muted-foreground hover:text-foreground"
           )}
         >
           <span>🇻🇳</span>
@@ -45,10 +45,10 @@ export function LanguageToggle({ variant = "dropdown", className }: LanguageTogg
           type="button"
           onClick={() => setLanguage("en")}
           className={cn(
-            "px-2.5 py-1 rounded-full transition-all flex items-center gap-1",
+            "px-2.5 py-1 rounded-md transition-all flex items-center gap-1 border-2",
             language === "en"
-              ? "bg-background text-foreground shadow-xs"
-              : "text-muted-foreground hover:text-foreground"
+              ? "bg-neo-blue text-neo-ink border-border shadow-neo-xs"
+              : "border-transparent text-muted-foreground hover:text-foreground"
           )}
         >
           <span>🇬🇧</span>
@@ -61,14 +61,14 @@ export function LanguageToggle({ variant = "dropdown", className }: LanguageTogg
   if (variant === "button") {
     return (
       <Button
-        variant="ghost"
+        variant="outline"
         size="sm"
         onClick={toggleLanguage}
-        className={cn("h-9 px-2.5 flex items-center gap-1.5 font-medium rounded-full", className)}
+        className={cn("h-9 px-2.5 flex items-center gap-1.5 font-extrabold rounded-lg", className)}
         title={t("header.selectLanguage")}
       >
-        <Globe className="h-4 w-4 text-muted-foreground" />
-        <span className="text-xs font-bold uppercase">{language}</span>
+        <Globe className="h-4 w-4" />
+        <span className="text-xs font-black uppercase">{language}</span>
       </Button>
     );
   }
@@ -79,39 +79,35 @@ export function LanguageToggle({ variant = "dropdown", className }: LanguageTogg
         <Button
           variant="outline"
           size="sm"
-          className={cn(
-            "h-9 px-2.5 gap-1.5 rounded-full border-border bg-background/80 hover:bg-muted font-medium transition-colors",
-            className
-          )}
+          className={cn("h-9 px-3 gap-1.5 rounded-lg font-extrabold", className)}
           aria-label={t("header.selectLanguage")}
         >
-          <Globe className="h-4 w-4 text-muted-foreground" />
-          <span className="text-xs font-semibold uppercase tracking-wider">{language}</span>
+          <Globe className="h-4 w-4" />
+          <span className="text-xs font-black uppercase tracking-wider">{language}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-40">
+      <DropdownMenuContent align="end" className="w-44">
         <DropdownMenuItem
           onClick={() => setLanguage("vi")}
-          className={cn("flex items-center justify-between cursor-pointer", language === "vi" && "font-semibold text-primary")}
+          className={cn("flex items-center justify-between", language === "vi" && "bg-neo-yellow/40 font-extrabold")}
         >
           <span className="flex items-center gap-2">
             <span>🇻🇳</span>
             <span>Tiếng Việt</span>
           </span>
-          {language === "vi" && <Check className="h-4 w-4 text-primary" />}
+          {language === "vi" && <Check className="h-4 w-4 stroke-[3]" />}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setLanguage("en")}
-          className={cn("flex items-center justify-between cursor-pointer", language === "en" && "font-semibold text-primary")}
+          className={cn("flex items-center justify-between", language === "en" && "bg-neo-blue/40 font-extrabold")}
         >
           <span className="flex items-center gap-2">
             <span>🇬🇧</span>
             <span>English</span>
           </span>
-          {language === "en" && <Check className="h-4 w-4 text-primary" />}
+          {language === "en" && <Check className="h-4 w-4 stroke-[3]" />}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
-

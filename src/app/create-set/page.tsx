@@ -532,18 +532,18 @@ export default function CreateSetPage() {
   console.log("terms", terms);
   return (
     <Protected>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background neo-dots-bg">
         <header
           className={cn(
-            "bg-white border-b border-gray-200 fixed top-0 right-0 z-40 transition-all duration-300",
-            isSidebarOpen ? "left-64" : "left-20"
+            "bg-card border-b-2 border-border fixed top-0 left-0 right-0 z-40 transition-all duration-300",
+            isSidebarOpen ? "md:left-64" : "md:left-20"
           )}
         >
-          <div className="flex h-16 items-center justify-between px-4">
-            <div className="flex items-center gap-8">
+          <div className="flex h-16 items-center justify-between px-6">
+            <div className="flex items-center gap-4">
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+                className="p-2 rounded-lg border-2 border-border bg-card text-foreground shadow-neo-xs hover:bg-neo-yellow hover:text-neo-ink transition-all"
               >
                 <span className="sr-only">Toggle sidebar</span>
                 <svg
@@ -578,30 +578,30 @@ export default function CreateSetPage() {
 
         <main
           className={cn(
-            "transition-all duration-300 pt-24 px-8",
-            isSidebarOpen ? "ml-64" : "ml-20"
+            "transition-all duration-300 pt-24 px-4 sm:px-8 ml-0",
+            isSidebarOpen ? "md:ml-64" : "md:ml-20"
           )}
         >
-          <div className="max-w-3xl mx-auto">
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="max-w-3xl mx-auto pb-16">
+            <div className="bg-card p-6 sm:p-8 rounded-xl shadow-neo border-2 border-border">
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Title
+                  <label className="block text-sm font-extrabold text-foreground mb-1.5">
+                    {t("set.title")}
                   </label>
                   <Input
-                    placeholder="Enter a title for your set"
+                    placeholder={t("set.titlePlaceholder")}
                     value={title}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description
+                  <label className="block text-sm font-extrabold text-foreground mb-1.5">
+                    {t("set.description")}
                   </label>
                   <Textarea
-                    placeholder="Add a description (optional)"
+                    placeholder={t("set.descriptionPlaceholder")}
                     value={description}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
                   />
@@ -609,34 +609,34 @@ export default function CreateSetPage() {
 
                 <div className="space-y-4">
                   <div className="flex justify-between items-center flex-wrap gap-2">
-                    <h2 className="text-lg font-medium">Terms ({terms.length})</h2>
-                    <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-black">{t("set.terms")} ({terms.length})</h2>
+                    <div className="flex items-center gap-2.5">
                       <Button
                         type="button"
-                        variant="outline"
-                        className="border-indigo-200 text-indigo-700 hover:bg-indigo-50 flex items-center gap-1.5"
+                        variant="secondary"
+                        className="flex items-center gap-1.5"
                         onClick={handleProofreadWithAI}
                         disabled={isProofreading || terms.length === 0}
                       >
                         {isProofreading ? (
-                          <Loader2 className="h-4 w-4 animate-spin text-indigo-600" />
+                          <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
-                          <Sparkles className="h-4 w-4 text-indigo-500" />
+                          <Sparkles className="h-4 w-4" />
                         )}
                         {isProofreading 
                           ? (language === "vi" ? "AI đang rà soát..." : "AI is proofreading...") 
                           : (language === "vi" ? "Rà soát lỗi bằng AI" : "AI Proofread")}
                       </Button>
-                      <Button onClick={handleAddTerm}>Add Term</Button>
+                      <Button onClick={handleAddTerm}>{t("set.addTerm")}</Button>
                     </div>
                   </div>
 
                   {terms.map((term, index) => (
                     <div
                       key={index}
-                      className="p-4 border rounded-lg space-y-4"
+                      className="p-5 border-2 border-border rounded-xl bg-background/60 shadow-neo-sm space-y-4"
                     >
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <div className="flex justify-between items-center mb-1">
                             <div className="flex items-center gap-2">
@@ -880,12 +880,12 @@ export default function CreateSetPage() {
         <Dialog open={isProofreadDialogOpen} onOpenChange={setIsProofreadDialogOpen}>
           <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-indigo-900">
-                <Sparkles className="h-5 w-5 text-indigo-600" />
-                Kết quả rà soát thẻ từ Gemini AI
+              <DialogTitle className="flex items-center gap-2 text-foreground">
+                <Sparkles className="h-5 w-5 text-neo-ink bg-neo-yellow p-0.5 rounded border border-border" />
+                {t("set.proofreadResultsTitle")}
               </DialogTitle>
               <DialogDescription>
-                AI đã phát hiện {proofreadIssues.length} vấn đề cần chú ý (chính tả, ngữ pháp hoặc định nghĩa chưa khớp).
+                {t("set.proofreadIssuesFound", { count: proofreadIssues.length })}
               </DialogDescription>
             </DialogHeader>
 
@@ -893,29 +893,29 @@ export default function CreateSetPage() {
               {proofreadIssues.map((issue, idx) => (
                 <div
                   key={idx}
-                  className="p-3.5 border rounded-lg bg-amber-50/50 border-amber-200 text-sm space-y-2"
+                  className="p-4 border-2 border-border rounded-xl bg-neo-yellow/20 shadow-neo-xs text-sm space-y-2.5"
                 >
                   <div className="flex justify-between items-start">
-                    <span className="font-semibold text-gray-800">
-                      Thẻ #{issue.originalIndex + 1}
+                    <span className="font-black text-foreground">
+                      {t("set.cardIndex", { number: issue.originalIndex + 1 })}
                     </span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-medium capitalize">
-                      {issue.issueType || "Cần sửa"}
+                    <span className="text-xs px-2.5 py-0.5 rounded-md border-2 border-border bg-neo-orange text-neo-ink font-extrabold capitalize">
+                      {issue.issueType || t("common.edit")}
                     </span>
                   </div>
 
-                  <p className="text-gray-700">{issue.feedback}</p>
+                  <p className="font-semibold text-foreground/90">{issue.feedback}</p>
 
-                  <div className="grid grid-cols-2 gap-2 text-xs bg-white p-2.5 rounded border">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs bg-card p-3 rounded-lg border-2 border-border">
                     <div>
-                      <span className="text-gray-500 block">Hiện tại:</span>
-                      <p className="font-medium text-gray-800">
+                      <span className="text-muted-foreground font-bold block">{t("set.currentValue")}</span>
+                      <p className="font-bold text-foreground">
                         {terms[issue.originalIndex]?.term} : {terms[issue.originalIndex]?.definition}
                       </p>
                     </div>
                     <div>
-                      <span className="text-indigo-600 font-semibold block">Gợi ý sửa từ AI:</span>
-                      <p className="font-bold text-indigo-900">
+                      <span className="text-foreground font-extrabold block">{t("set.aiFixSuggestion")}</span>
+                      <p className="font-black text-foreground bg-neo-mint/40 px-1.5 py-0.5 rounded inline-block mt-0.5">
                         {issue.suggestedTerm || terms[issue.originalIndex]?.term} : {issue.suggestedDefinition || terms[issue.originalIndex]?.definition}
                       </p>
                     </div>
@@ -924,31 +924,28 @@ export default function CreateSetPage() {
                   <div className="flex justify-end pt-1">
                     <Button
                       size="sm"
-                      variant="outline"
-                      className="text-xs h-8 border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                      variant="accent"
+                      className="text-xs h-8"
                       onClick={() => handleApplySingleFix(issue)}
                     >
-                      <Check className="h-3.5 w-3.5 mr-1 text-indigo-600" />
-                      Áp dụng sửa thẻ này
+                      <Check className="h-3.5 w-3.5 mr-1" />
+                      {t("set.applyThisCard")}
                     </Button>
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="flex justify-between items-center pt-2 border-t">
+            <div className="flex justify-between items-center pt-3 border-t-2 border-border">
               <Button
-                variant="ghost"
+                variant="outline"
                 onClick={() => setIsProofreadDialogOpen(false)}
               >
-                Đóng
+                {t("common.close")}
               </Button>
               {proofreadIssues.length > 1 && (
-                <Button
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white"
-                  onClick={handleApplyAllFixes}
-                >
-                  Áp dụng tất cả ({proofreadIssues.length})
+                <Button onClick={handleApplyAllFixes}>
+                  {t("set.applyAllCards", { count: proofreadIssues.length })}
                 </Button>
               )}
             </div>

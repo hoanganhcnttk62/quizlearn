@@ -68,42 +68,38 @@ export default function LoginPage() {
   }, [isSuccess, isError]);
   // Handle click outside modal
   return (
-    <div className="min-h-screen relative flex flex-col items-center justify-center bg-gradient-to-b from-primary-100 to-primary-200 dark:bg-black">
+    <div className="min-h-screen relative flex flex-col items-center justify-center bg-background neo-dots-bg px-4 py-10">
       {/* Top right language switcher */}
-      <div className="absolute top-4 right-4 z-20">
+      <div className="absolute top-5 right-5 z-20">
         <LanguageToggle variant="pill" />
       </div>
 
       <Suspense fallback={null}>
         <SearchParamsHandler />
       </Suspense>
-      <div className="absolute inset-0 bg-gradient-radial from-white/20 to-transparent dark:from-zinc-800/20 pointer-events-none" />
-      <div className="w-full max-w-md px-4 z-10">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-primary-900 dark:text-white mb-2">
-            QuizLearn
-          </h1>
-          <p className="text-primary-700 dark:text-zinc-400">
+      <div className="w-full max-w-md z-10">
+        <div className="text-center mb-8 space-y-2">
+          <div className="inline-block bg-neo-yellow text-neo-ink border-2 border-border px-5 py-1.5 rounded-xl shadow-neo -rotate-1">
+            <h1 className="text-3xl font-black tracking-tight">QuizLearn</h1>
+          </div>
+          <p className="text-sm font-bold text-muted-foreground pt-1">
             {language === "vi" ? "Khởi đầu hành trình học tập thông minh" : "Your Learning Journey Starts Here"}
           </p>
         </div>
 
-        <Card className="w-full backdrop-blur-sm bg-white/90 dark:bg-zinc-900/90 shadow-custom dark:border-zinc-800">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center text-primary-800 dark:text-white">
+        <Card className="w-full shadow-neo-lg">
+          <CardHeader className="space-y-1 border-b-2 border-border bg-neo-blue/25 rounded-t-[10px]">
+            <CardTitle className="text-2xl font-black text-center text-foreground">
               {t("auth.welcomeTitle")}
             </CardTitle>
-            <CardDescription className="text-center text-primary-600 dark:text-zinc-400">
+            <CardDescription className="text-center font-semibold">
               {t("auth.signInSubtitle")}
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div className="space-y-2">
-                <Label
-                  htmlFor="email"
-                  className="text-primary-700 dark:text-zinc-300"
-                >
+                <Label htmlFor="email" className="font-bold">
                   {t("auth.emailLabel")}
                 </Label>
                 <Input
@@ -113,14 +109,10 @@ export default function LoginPage() {
                   placeholder={t("auth.emailPlaceholder")}
                   required
                   autoComplete="email"
-                  className="border-primary-200 focus:border-primary-500 focus:ring-primary-500 dark:bg-zinc-800 dark:border-zinc-700 dark:focus:border-zinc-600 dark:focus:ring-zinc-600 dark:text-white dark:placeholder:text-zinc-500"
                 />
               </div>
               <div className="space-y-2">
-                <Label
-                  htmlFor="password"
-                  className="text-primary-700 dark:text-zinc-300"
-                >
+                <Label htmlFor="password" className="font-bold">
                   {t("auth.passwordLabel")}
                 </Label>
                 <Input
@@ -129,24 +121,20 @@ export default function LoginPage() {
                   type="password"
                   required
                   autoComplete="current-password"
-                  className="border-primary-200 focus:border-primary-500 focus:ring-primary-500 dark:bg-zinc-800 dark:border-zinc-700 dark:focus:border-zinc-600 dark:focus:ring-zinc-600 dark:text-white"
                 />
               </div>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-              <Button
-                type="submit"
-                className="w-full bg-primary-600 hover:bg-primary-700 border border-input text-dark dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-black transition-colors"
-              >
+              <Button type="submit" size="lg" className="w-full">
                 {t("auth.signInButton")}
               </Button>
               <SocialLogin />
-              <div className="text-sm text-center space-y-2">
-                <div className="text-primary-600 dark:text-zinc-400">
+              <div className="text-sm font-semibold text-center space-y-2 pt-1">
+                <div className="text-muted-foreground">
                   {t("auth.noAccount")}{" "}
                   <Link
                     href="/register"
-                    className="text-primary-700 hover:text-primary-800 dark:text-zinc-300 dark:hover:text-white font-semibold hover:underline"
+                    className="text-foreground font-black underline decoration-2 underline-offset-4 hover:bg-neo-yellow hover:text-neo-ink px-1 rounded"
                   >
                     {t("auth.createOne")}
                   </Link>
@@ -154,7 +142,7 @@ export default function LoginPage() {
                 <div>
                   <Link
                     href="/forgot-password"
-                    className="text-primary-600 hover:text-primary-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+                    className="text-muted-foreground hover:text-foreground underline underline-offset-4"
                   >
                     {t("auth.forgotPassword")}
                   </Link>

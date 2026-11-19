@@ -49,6 +49,17 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        neo: {
+          yellow: "#FFDE00",
+          blue: "#38BDF8",
+          mint: "#4ADE80",
+          coral: "#FF6B6B",
+          orange: "#FB923C",
+          pink: "#FF90E8",
+          cream: "#FFFDF5",
+          sand: "#F3EDE0",
+          ink: "#111111",
+        },
         chart: {
           1: "hsl(var(--chart-1))",
           2: "hsl(var(--chart-2))",
@@ -82,8 +93,12 @@ module.exports = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       boxShadow: {
-        custom:
-          "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+        "neo-xs": "2px 2px 0px 0px var(--neo-shadow)",
+        "neo-sm": "3px 3px 0px 0px var(--neo-shadow)",
+        neo: "4px 4px 0px 0px var(--neo-shadow)",
+        "neo-lg": "6px 6px 0px 0px var(--neo-shadow)",
+        "neo-xl": "8px 8px 0px 0px var(--neo-shadow)",
+        custom: "4px 4px 0px 0px var(--neo-shadow)",
       },
     },
   },

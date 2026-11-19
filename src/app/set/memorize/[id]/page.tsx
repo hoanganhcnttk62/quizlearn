@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useCreateOrUpdateUserSessionMutation } from "../../../../../redux/features/userSessions/userSessionsApi";
 import { useUpdateProgressMutation } from "../../../../../redux/features/userProgresses/userProgressesApi";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Card {
   id: string;
@@ -26,6 +27,7 @@ interface Card {
 }
 
 export default function MemorizePage() {
+  const { t, language } = useLanguage();
   const router = useRouter();
   const { user } = useSelector((state: any) => state.auth);
   const params = useParams();
@@ -112,12 +114,14 @@ export default function MemorizePage() {
 
   return (
     <Protected>
-      <div className="min-h-screen bg-background">
-        <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="min-h-screen bg-background neo-dots-bg">
+        <div className="max-w-4xl mx-auto px-4 py-10">
           <div className="mb-8">
-            <Progress value={progress} className="h-2" />
-            <div className="text-center mt-2 text-sm text-gray-500">
-              Card {currentCardIndex + 1} of {cards.length}
+            <Progress value={progress} className="h-4" />
+            <div className="text-center mt-3">
+              <span className="inline-block px-3 py-1 rounded-lg border-2 border-border bg-neo-yellow text-neo-ink text-xs font-black shadow-neo-xs">
+                {t("study.cardOf", { current: currentCardIndex + 1, total: cards.length })}
+              </span>
             </div>
           </div>
 
@@ -133,7 +137,7 @@ export default function MemorizePage() {
               variant="outline"
               onClick={() => router.push(`/set/${id}`)}
             >
-              Exit Memorization Mode
+              {language === "vi" ? "Thoát chế độ Ghi nhớ" : "Exit Memorization Mode"}
             </Button>
           </div>
         </div>

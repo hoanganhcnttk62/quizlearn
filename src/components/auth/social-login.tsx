@@ -3,37 +3,27 @@
 import { Button } from "@/components/ui/button";
 import { Github } from "lucide-react";
 import Image from "next/image";
-import { useDispatch } from "react-redux";
+import { signIn } from "next-auth/react";
+import { useLanguage } from "@/i18n/LanguageContext";
 
-const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
-import { signIn, useSession } from "next-auth/react";
-interface SessionUser {
-  email?: string;
-  name?: string;
-  image?: string;
-  provider?: string | null;
-}
 export function SocialLogin() {
-  const dispatch = useDispatch();
-  const { data } = useSession();
-  const socialUser = data?.user as SessionUser | undefined;
-  console.log("socialUser", socialUser);
+  const { t } = useLanguage();
 
   return (
-    <div className="flex flex-col gap-4 mt-6">
+    <div className="flex flex-col gap-4 mt-4 w-full">
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
+          <span className="w-full border-t-2 border-border/30" />
         </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
+        <div className="relative flex justify-center text-xs font-extrabold uppercase">
+          <span className="bg-card px-2.5 text-muted-foreground">
+            {t("auth.orContinueWith")}
           </span>
         </div>
       </div>
-      <div className="flex gap-4">
+      <div className="flex gap-3">
         <Button
+          type="button"
           onClick={() => signIn("google")}
           variant="outline"
           className="w-full flex items-center justify-center"
@@ -41,18 +31,19 @@ export function SocialLogin() {
           <Image
             src="/google.svg"
             alt="Google"
-            width={20}
-            height={20}
+            width={18}
+            height={18}
             className="mr-2"
           />
           Google
         </Button>
         <Button
+          type="button"
           onClick={() => signIn("github")}
           variant="outline"
           className="w-full flex items-center justify-center"
         >
-          <Github className="mr-2 h-5 w-5" />
+          <Github className="mr-2 h-4 w-4 stroke-[2.5]" />
           GitHub
         </Button>
       </div>

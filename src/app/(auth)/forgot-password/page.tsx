@@ -16,8 +16,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useForgotPasswordMutation } from "../../../../redux/features/auth/authApi";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { LanguageToggle } from "@/components/LanguageToggle";
 
 export default function ForgotPasswordPage() {
+  const { t, language } = useLanguage();
   const router = useRouter();
   const [error, setError] = useState("");
   const [step, setStep] = useState<"email" | "otp" | "reset">("email");
@@ -114,7 +117,7 @@ export default function ForgotPasswordPage() {
       toast.error(message);
       return;
     }
- 
+
     try {
       const response = await fetch("/api/auth/verify-reset-otp", {
         method: "POST",
@@ -187,44 +190,37 @@ export default function ForgotPasswordPage() {
       case "email":
         return (
           <form onSubmit={handleEmailSubmit}>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div className="space-y-2">
-                <Label
-                  htmlFor="email"
-                  className="text-primary-700 dark:text-zinc-300"
-                >
-                  Email
+                <Label htmlFor="email" className="font-bold">
+                  {t("auth.emailLabel")}
                 </Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="name@example.com"
+                  placeholder={t("auth.emailPlaceholder")}
                   required
                   autoComplete="email"
-                  className="border-primary-200 focus:border-primary-500 focus:ring-primary-500 dark:bg-zinc-800 dark:border-zinc-700 dark:focus:border-zinc-600 dark:focus:ring-zinc-600 dark:text-white dark:placeholder:text-zinc-500"
                 />
               </div>
               {error && (
-                <div className="text-sm text-red-500 text-center bg-red-50 dark:text-red-400 dark:bg-red-900/50 p-2 rounded dark:border dark:border-red-800">
+                <div className="text-sm font-bold text-neo-ink text-center bg-neo-coral border-2 border-border p-2.5 rounded-lg shadow-neo-xs">
                   {error}
                 </div>
               )}
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-              <Button
-                type="submit"
-                className="w-full bg-primary-600 hover:bg-primary-700 text-white dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-black transition-colors"
-              >
-                Send Reset Code
+              <Button type="submit" size="lg" className="w-full">
+                {language === "vi" ? "Gửi mã khôi phục" : "Send Reset Code"}
               </Button>
-              <div className="text-sm text-center text-primary-600 dark:text-zinc-400">
-                Remember your password?{" "}
+              <div className="text-sm font-semibold text-center text-muted-foreground">
+                {t("auth.rememberPassword")}{" "}
                 <Link
                   href="/login"
-                  className="text-primary-700 hover:text-primary-800 dark:text-zinc-300 dark:hover:text-white font-semibold hover:underline"
+                  className="text-foreground font-black underline decoration-2 underline-offset-4 hover:bg-neo-yellow hover:text-neo-ink px-1 rounded"
                 >
-                  Sign in
+                  {t("auth.signInButton")}
                 </Link>
               </div>
             </CardFooter>
@@ -234,7 +230,7 @@ export default function ForgotPasswordPage() {
       case "otp":
         return (
           <div>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div className="flex justify-center gap-2">
                 {otp.map((digit, index) => (
                   <Input
@@ -249,31 +245,28 @@ export default function ForgotPasswordPage() {
                     value={digit}
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
-                    className="w-12 h-12 text-center text-lg border-primary-200 focus:border-primary-500 focus:ring-primary-500 dark:bg-zinc-800 dark:border-zinc-700 dark:focus:border-zinc-600 dark:focus:ring-zinc-600 dark:text-white"
+                    className="w-12 h-12 text-center text-lg font-black"
                   />
                 ))}
               </div>
               {error && (
-                <div className="text-sm text-red-500 text-center bg-red-50 dark:text-red-400 dark:bg-red-900/50 p-2 rounded dark:border dark:border-red-800">
+                <div className="text-sm font-bold text-neo-ink text-center bg-neo-coral border-2 border-border p-2.5 rounded-lg shadow-neo-xs">
                   {error}
                 </div>
               )}
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-              <Button
-                onClick={verifyOtp}
-                className="w-full bg-primary-600 hover:bg-primary-700 text-white dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-black transition-colors"
-              >
-                Verify Code
+              <Button onClick={verifyOtp} size="lg" className="w-full">
+                {language === "vi" ? "Xác nhận mã" : "Verify Code"}
               </Button>
-              <div className="text-sm text-center text-primary-600 dark:text-zinc-400">
-                Didn't receive the code?{" "}
+              <div className="text-sm font-semibold text-center text-muted-foreground">
+                {language === "vi" ? "Chưa nhận được mã? " : "Didn't receive the code? "}
                 <button
                   onClick={handleResendOtp}
                   type="button"
-                  className="text-primary-700 hover:text-primary-800 dark:text-zinc-300 dark:hover:text-white font-semibold hover:underline"
+                  className="text-foreground font-black underline underline-offset-4"
                 >
-                  Resend
+                  {language === "vi" ? "Gửi lại" : "Resend"}
                 </button>
               </div>
             </CardFooter>
@@ -283,13 +276,10 @@ export default function ForgotPasswordPage() {
       case "reset":
         return (
           <form onSubmit={handleResetPassword}>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div className="space-y-2">
-                <Label
-                  htmlFor="password"
-                  className="text-primary-700 dark:text-zinc-300"
-                >
-                  New Password
+                <Label htmlFor="password" className="font-bold">
+                  {language === "vi" ? "Mật khẩu mới" : "New Password"}
                 </Label>
                 <Input
                   id="password"
@@ -297,15 +287,11 @@ export default function ForgotPasswordPage() {
                   type="password"
                   required
                   autoComplete="new-password"
-                  className="border-primary-200 focus:border-primary-500 focus:ring-primary-500 dark:bg-zinc-800 dark:border-zinc-700 dark:focus:border-zinc-600 dark:focus:ring-zinc-600 dark:text-white"
                 />
               </div>
               <div className="space-y-2">
-                <Label
-                  htmlFor="confirmPassword"
-                  className="text-primary-700 dark:text-zinc-300"
-                >
-                  Confirm New Password
+                <Label htmlFor="confirmPassword" className="font-bold">
+                  {t("auth.confirmPasswordLabel")}
                 </Label>
                 <Input
                   id="confirmPassword"
@@ -313,21 +299,17 @@ export default function ForgotPasswordPage() {
                   type="password"
                   required
                   autoComplete="new-password"
-                  className="border-primary-200 focus:border-primary-500 focus:ring-primary-500 dark:bg-zinc-800 dark:border-zinc-700 dark:focus:border-zinc-600 dark:focus:ring-zinc-600 dark:text-white"
                 />
               </div>
               {error && (
-                <div className="text-sm text-red-500 text-center bg-red-50 dark:text-red-400 dark:bg-red-900/50 p-2 rounded dark:border dark:border-red-800">
+                <div className="text-sm font-bold text-neo-ink text-center bg-neo-coral border-2 border-border p-2.5 rounded-lg shadow-neo-xs">
                   {error}
                 </div>
               )}
             </CardContent>
             <CardFooter>
-              <Button
-                type="submit"
-                className="w-full bg-primary-600 hover:bg-primary-700 text-white dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-black transition-colors"
-              >
-                Reset Password
+              <Button type="submit" size="lg" variant="accent" className="w-full">
+                {t("auth.resetPasswordTitle")}
               </Button>
             </CardFooter>
           </form>
@@ -336,28 +318,30 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-primary-100 to-primary-200 dark:bg-black">
-      <div className="absolute inset-0 bg-gradient-radial from-white/20 to-transparent dark:from-zinc-800/20 pointer-events-none" />
+    <div className="min-h-screen relative flex flex-col items-center justify-center bg-background neo-dots-bg px-4 py-10">
+      <div className="absolute top-5 right-5 z-20">
+        <LanguageToggle variant="pill" />
+      </div>
 
-      <div className="w-full max-w-md px-4 z-10">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-primary-900 dark:text-white mb-2">
-            QuizLearn
-          </h1>
-          <p className="text-primary-700 dark:text-zinc-400">
-            Reset Your Password
+      <div className="w-full max-w-md z-10">
+        <div className="text-center mb-8 space-y-2">
+          <div className="inline-block bg-neo-coral text-neo-ink border-2 border-border px-5 py-1.5 rounded-xl shadow-neo -rotate-1">
+            <h1 className="text-3xl font-black tracking-tight">QuizLearn</h1>
+          </div>
+          <p className="text-sm font-bold text-muted-foreground pt-1">
+            {t("auth.resetPasswordTitle")}
           </p>
         </div>
 
-        <Card className="w-full backdrop-blur-sm bg-white/90 dark:bg-zinc-900/90 shadow-custom dark:border-zinc-800">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center text-primary-800 dark:text-white">
-              {step === "email" && "Forgot Password"}
-              {step === "otp" && "Verify Your Email"}
-              {step === "reset" && "Create New Password"}
+        <Card className="w-full shadow-neo-lg">
+          <CardHeader className="space-y-1 border-b-2 border-border bg-neo-orange/25 rounded-t-[10px]">
+            <CardTitle className="text-2xl font-black text-center text-foreground">
+              {step === "email" && t("auth.forgotPassword")}
+              {step === "otp" && (language === "vi" ? "Xác thực Email" : "Verify Your Email")}
+              {step === "reset" && (language === "vi" ? "Tạo mật khẩu mới" : "Create New Password")}
             </CardTitle>
-            <CardDescription className="text-center text-primary-600 dark:text-zinc-400">
-              {step === "email" && "Enter your email to receive a reset code"}
+            <CardDescription className="text-center font-semibold">
+              {step === "email" && t("auth.resetPasswordSubtitle")}
               {step === "otp" && "Enter the 6-digit code sent to your email"}
               {step === "reset" && "Enter your new password"}
             </CardDescription>

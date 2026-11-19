@@ -45,6 +45,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PageLayout } from "@/components/layout/PageLayout";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const navigationItems = [
   { name: "Dashboard", href: "/dashboard", current: true },
@@ -85,6 +86,7 @@ interface Card {
 }
 
 export default function DashboardPage() {
+  const { t, language } = useLanguage();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -346,123 +348,101 @@ export default function DashboardPage() {
   return (
     <Protected>
       <PageLayout>
-        <div className="dark:bg-[#1a1a1a] bg-background text-white min-h-screen">
-          <div className="max-w-[1400px] mx-auto p-8 space-y-8">
-            {/* Dashboard Header */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <h1 className="text-2xl font-semibold text-gray-600">
-                  Folders
+        <div className="min-h-screen text-foreground">
+          <div className="max-w-[1400px] mx-auto p-6 sm:p-8 space-y-8">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-5 border-b-2 border-border">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl border-2 border-border bg-neo-orange text-neo-ink shadow-neo-xs flex items-center justify-center">
+                  <Folder className="w-6 h-6 stroke-[2.5]" />
+                </div>
+                <h1 className="text-3xl font-black text-foreground">
+                  {t("folder.title")}
                 </h1>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="bg-[#2a2a2a] rounded-lg px-4 py-2 text-sm text-gray-300">
-                  30 days Oct 16/21 - Nov 14/21
-                </div>
-              </div>
+              <Button className="flex items-center gap-2" onClick={handleCreateSet}>
+                <Plus className="w-4 h-4 stroke-[2.5]" />
+                <span>{t("dashboard.createSet")}</span>
+              </Button>
             </div>
 
-            {/* Top Row */}
-            <div className="p-4 space-y-4">
-              <div className="flex justify-between items-center">
-                <Button variant="outline" className="flex items-center gap-2" onClick={handleCreateSet}>
-                  <span className="text-gray-600">+ Create new</span>
-                </Button>
-
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="icon">
-                    <span className="sr-only">Select multiple</span>
-                    <Folder className="h-4 w-4 text-gray-600" />
-                  </Button>
-
-                  <div className="flex items-center">
-                    <span className="mr-2 text-gray-600">Last Updated</span>
-                    <Button variant="ghost" size="icon">
-                      ↓
-                    </Button>
-                  </div>
-
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="text-gray-600">
-                        See saved or trash
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem>Saved</DropdownMenuItem>
-                      <DropdownMenuItem>Trash</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-
-                  <Button variant="outline" size="icon">
-                    <Filter className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-
+            <div className="space-y-4">
               <Tabs defaultValue="published" className="w-full" onValueChange={setActiveTab}>
                 <TabsList className="mb-4">
-                  <TabsTrigger value="published">Published Sets ({publishedSets.length})</TabsTrigger>
-                  <TabsTrigger value="drafts">Draft Sets ({draftSets.length})</TabsTrigger>
+                  <TabsTrigger value="published">
+                    {language === "vi" ? "Bộ thẻ đã xuất bản" : "Published Sets"} ({publishedSets.length})
+                  </TabsTrigger>
+                  <TabsTrigger value="drafts">
+                    {language === "vi" ? "Bản nháp" : "Draft Sets"} ({draftSets.length})
+                  </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="published" className="space-y-2">
+                <TabsContent value="published" className="space-y-3">
                   {publishedSets.length === 0 ? (
-                    <div className="text-center py-8 text-gray-600">
-                      No published sets found. Create a new set or publish a draft.
-                    </div>
+                    <Card className="p-8 text-center font-bold text-muted-foreground">
+                      {language === "vi"
+                        ? "Chưa có bộ thẻ nào được xuất bản trong thư mục này."
+                        : "No published sets found. Create a new set or publish a draft."}
+                    </Card>
                   ) : (
                     publishedSets.map((set: any, index: number) => (
-                      <div
+                      <Card
                         key={index}
-                        className="flex justify-between items-center p-2 hover:bg-gray-100 rounded-md bg-teal-600 hover:bg-teal-500 transition-colors cursor-pointer"
+                        interactive
+                        tone="mint"
+                        className="flex justify-between items-center p-4"
                         onClick={() => router.push(`/set/${set.id}`)}
                       >
-                        <div className="flex items-center gap-2">
-                          <span className="text-white">{set.title}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="font-black text-lg text-neo-ink">{set.title}</span>
                         </div>
 
                         <div className="flex items-center gap-2">
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="icon"
+                            className="h-9 w-9"
                             onClick={(e) => handleEditCardsOfSet(set, e)}
-                            title="Edit Cards"
+                            title={language === "vi" ? "Chỉnh sửa thẻ" : "Edit Cards"}
                           >
-                            <PencilLine className="h-4 w-4 text-white" />
+                            <PencilLine className="h-4 w-4" />
                           </Button>
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="icon"
+                            className="h-9 w-9"
                             onClick={(e) => handleOpenUpdateDialog(set, e)}
-                            title="Edit Set"
+                            title={language === "vi" ? "Chỉnh sửa bộ thẻ" : "Edit Set"}
                           >
-                            <Edit className="h-4 w-4 text-white" />
+                            <Edit className="h-4 w-4" />
                           </Button>
                           <Button
-                            variant="ghost"
+                            variant="destructive"
                             size="icon"
+                            className="h-9 w-9"
                             onClick={(e) => handleDeleteSet(set.id, e)}
-                            title="Delete Set"
+                            title={t("common.delete")}
                           >
-                            <Trash className="h-4 w-4 text-white" />
+                            <Trash className="h-4 w-4" />
                           </Button>
                         </div>
-                      </div>
+                      </Card>
                     ))
                   )}
                 </TabsContent>
 
-                <TabsContent value="drafts" className="space-y-2">
+                <TabsContent value="drafts" className="space-y-3">
                   {draftSets.length === 0 ? (
-                    <div className="text-center py-8 text-gray-600">
-                      No draft sets found. Create a new set to start working on a draft.
-                    </div>
+                    <Card className="p-8 text-center font-bold text-muted-foreground">
+                      {language === "vi"
+                        ? "Chưa có bản nháp nào."
+                        : "No draft sets found. Create a new set to start working on a draft."}
+                    </Card>
                   ) : (
                     draftSets.map((set: any, index: number) => (
                       <div
                         key={index}
-                        className="flex justify-between items-center p-2 hover:bg-gray-100 rounded-md bg-amber-600 hover:bg-amber-500 transition-colors cursor-pointer"
+                        className="flex justify-between items-center p-4 rounded-xl border-2 border-border bg-neo-yellow text-neo-ink shadow-neo-sm hover:-translate-y-[1px] hover:shadow-neo transition-all cursor-pointer"
                         onClick={() => router.push(`/set/${set.id}`)}
                       >
                         <div className="flex items-center gap-2">

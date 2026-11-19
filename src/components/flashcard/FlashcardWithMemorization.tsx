@@ -89,15 +89,17 @@ export const FlashcardWithMemorization: React.FC<FlashcardWithMemorizationProps>
       {isFlipped && (
         <div className="flex justify-center gap-4 mt-6">
           <Button
-            variant="outline"
-            className="px-8 py-6 text-lg bg-red-50 hover:bg-red-100 text-red-600 border-red-200"
+            variant="destructive"
+            size="lg"
+            className="px-8 py-6 text-base font-black"
             onClick={() => handleMemorizationResponse(false)}
           >
             {language === "vi" ? "Chưa thuộc, cần ôn lại" : "No, I need to review"}
           </Button>
           <Button
-            variant="outline"
-            className="px-8 py-6 text-lg bg-green-50 hover:bg-green-100 text-green-600 border-green-200"
+            variant="accent"
+            size="lg"
+            className="px-8 py-6 text-base font-black"
             onClick={() => handleMemorizationResponse(true)}
           >
             {language === "vi" ? "Đã thuộc từ này" : "Yes, I know this"}

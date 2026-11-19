@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import {
   Dialog,
@@ -10,12 +12,15 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { Plus } from "lucide-react";
 
 interface CreateFolderDialogProps {
   onCreateFolder: (name: string) => void;
 }
 
 export function CreateFolderDialog({ onCreateFolder }: CreateFolderDialogProps) {
+  const { t, language } = useLanguage();
   const [folderName, setFolderName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
@@ -30,20 +35,23 @@ export function CreateFolderDialog({ onCreateFolder }: CreateFolderDialogProps) 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="flex items-center gap-2">
-          <span className="text-gray-600">+ Create Folder</span>
+        <Button className="flex items-center gap-2">
+          <Plus className="w-4 h-4 stroke-[2.5]" />
+          <span>{t("folder.createFolder")}</span>
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create New Folder</DialogTitle>
+          <DialogTitle>{t("folder.createFolder")}</DialogTitle>
           <DialogDescription>
-            Enter a name for your new folder.
+            {language === "vi"
+              ? "Nhập tên cho thư mục học tập mới của bạn."
+              : "Enter a name for your new study folder."}
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
           <Input
-            placeholder="Folder name"
+            placeholder={t("folder.folderName")}
             value={folderName}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFolderName(e.target.value)}
             onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -55,11 +63,11 @@ export function CreateFolderDialog({ onCreateFolder }: CreateFolderDialogProps) 
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setIsOpen(false)}>
-            Cancel
+            {t("common.cancel")}
           </Button>
-          <Button onClick={handleCreate}>Create</Button>
+          <Button onClick={handleCreate}>{t("common.create")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
-} 
+}

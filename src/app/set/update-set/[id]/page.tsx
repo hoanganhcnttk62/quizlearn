@@ -686,28 +686,36 @@ export default function UpdateSetPage() {
   console.log("modifiedCards", modifiedCards);
   return (
     <Protected>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background neo-dots-bg">
         <header
           className={cn(
-            "bg-white border-b border-gray-200 fixed top-0 right-0 z-40 transition-all duration-300",
-            isSidebarOpen ? "left-64" : "left-20"
+            "bg-card border-b-2 border-border fixed top-0 left-0 right-0 z-40 transition-all duration-300",
+            isSidebarOpen ? "md:left-64" : "md:left-20"
           )}
         >
-          <div className="flex h-16 items-center justify-between px-4">
-            <div className="flex items-center gap-8">
+          <div className="flex h-16 items-center justify-between px-6">
+            <div className="flex items-center gap-4">
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+                className="p-2 rounded-lg border-2 border-border bg-card text-foreground shadow-neo-xs hover:bg-neo-yellow hover:text-neo-ink transition-all"
               >
                 <span className="sr-only">Toggle sidebar</span>
-                <MenuIcon className="w-6 h-6" />
+                <MenuIcon className="w-5 h-5" />
               </button>
-              <h1 className="text-xl font-semibold">Edit Set: {title}</h1>
+              <h1 className="text-xl font-black">
+                {language === "vi" ? "Chỉnh sửa bộ thẻ:" : "Edit Set:"} {title}
+              </h1>
             </div>
-            <div className="flex items-center text-sm text-gray-500">
-              <span className="mr-2">{autosaveStatus}</span>
+            <div className="flex items-center text-xs font-bold text-muted-foreground">
+              <span className="mr-2 px-2.5 py-1 rounded-md border-2 border-border bg-neo-mint text-neo-ink shadow-neo-xs">
+                {autosaveStatus}
+              </span>
               {lastSaveTime && (
-                <span>Last saved {timeSinceLastSave} ago</span>
+                <span>
+                  {language === "vi"
+                    ? `Đã lưu ${timeSinceLastSave} trước`
+                    : `Last saved ${timeSinceLastSave} ago`}
+                </span>
               )}
             </div>
           </div>
@@ -720,45 +728,45 @@ export default function UpdateSetPage() {
 
         <main
           className={cn(
-            "transition-all duration-300 pt-24 px-8",
-            isSidebarOpen ? "ml-64" : "ml-20"
+            "transition-all duration-300 pt-24 px-4 sm:px-8 ml-0",
+            isSidebarOpen ? "md:ml-64" : "md:ml-20"
           )}
         >
-          <div className="max-w-3xl mx-auto">
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="max-w-3xl mx-auto pb-16">
+            <div className="bg-card p-6 sm:p-8 rounded-xl shadow-neo border-2 border-border">
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Title
+                  <label className="block text-sm font-extrabold text-foreground mb-1.5">
+                    {t("set.title")}
                   </label>
                   <Input
-                    placeholder="Enter a title for your set"
+                    placeholder={t("set.titlePlaceholder")}
                     value={title}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description
+                  <label className="block text-sm font-extrabold text-foreground mb-1.5">
+                    {t("set.description")}
                   </label>
                   <Textarea
-                    placeholder="Add a description (optional)"
+                    placeholder={t("set.descriptionPlaceholder")}
                     value={description}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
                   />
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-lg font-medium">Terms ({terms.length})</h2>
-                    <div className="flex items-center gap-2">
+                  <div className="flex justify-between items-center flex-wrap gap-2">
+                    <h2 className="text-lg font-black">{t("set.terms")} ({terms.length})</h2>
+                    <div className="flex items-center gap-2.5">
                       <Button
                         type="button"
-                        variant="outline"
+                        variant="secondary"
                         onClick={handleProofreadWithAI}
                         disabled={isProofreading}
-                        className="flex items-center gap-1.5 text-blue-600 border-blue-200 bg-blue-50/50 hover:bg-blue-100"
+                        className="flex items-center gap-1.5"
                       >
                         {isProofreading ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -767,21 +775,21 @@ export default function UpdateSetPage() {
                         )}
                         {language === "vi" ? "Rà soát bằng AI" : "AI Proofread"}
                       </Button>
-                      <Button onClick={handleAddTerm}>Add Term</Button>
+                      <Button onClick={handleAddTerm}>{t("set.addTerm")}</Button>
                     </div>
                   </div>
 
                   {terms.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      No cards in this set yet. Add your first term below.
+                    <div className="text-center py-8 text-muted-foreground font-semibold">
+                      {t("set.noCardsYet")}
                     </div>
                   ) : (
                     terms.map((term, index) => (
                       <div
                         key={index}
                         className={cn(
-                          "p-4 border rounded-lg space-y-4",
-                          term.id && modifiedCards.has(term.id) && "border-amber-500"
+                          "p-5 border-2 border-border rounded-xl bg-background/60 shadow-neo-sm space-y-4",
+                          term.id && modifiedCards.has(term.id) && "bg-neo-yellow/15"
                         )}
                       >
                         <div className="flex justify-between items-center">

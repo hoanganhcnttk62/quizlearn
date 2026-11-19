@@ -38,6 +38,7 @@ import {
 } from "../../../redux/features/admin/adminApi";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { NeoPageHeader, NeoStatCard, Badge } from "@/components/neo";
 
 export default function AdminDashboardPage() {
   const { t, language } = useLanguage();
@@ -132,29 +133,18 @@ export default function AdminDashboardPage() {
     <PageLayout>
       <div className="p-6 max-w-7xl mx-auto space-y-6">
         {/* Top Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border">
-          <div>
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-sm">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                {t("admin.dashboardTitle")}
-              </h1>
-              <span className="bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wider">
-                Admin Console
-              </span>
-            </div>
-            <p className="text-sm text-muted-foreground mt-1.5">
-              {t("admin.dashboardSubtitle")}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2.5">
+        <NeoPageHeader
+          title={t("admin.dashboardTitle")}
+          subtitle={t("admin.dashboardSubtitle")}
+          badge="Admin Console"
+          badgeVariant="blue"
+          icon={<ShieldCheck className="w-6 h-6 stroke-[2.5]" />}
+          iconTone="yellow"
+          actions={
             <Button
               variant="outline"
               size="sm"
-              className="gap-2 shadow-xs border-border bg-card hover:bg-accent"
+              className="gap-2"
               onClick={() => {
                 refetchStats();
                 refetchUsers();
@@ -163,29 +153,29 @@ export default function AdminDashboardPage() {
                 toast.info(language === "vi" ? "Đã đồng bộ dữ liệu mới nhất" : "Data synchronized successfully");
               }}
             >
-              <RefreshCw className="w-4 h-4" />
+              <RefreshCw className="w-4 h-4 stroke-[2.5]" />
               {t("admin.refresh")}
             </Button>
-          </div>
-        </div>
+          }
+        />
 
         {/* Tab Navigation */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-muted/70 p-1 rounded-lg border border-border">
-            <TabsTrigger value="overview" className="gap-2 font-medium">
-              <TrendingUp className="w-4 h-4 text-blue-600" />
+          <TabsList>
+            <TabsTrigger value="overview" className="gap-2">
+              <TrendingUp className="w-4 h-4" />
               {t("admin.tabOverview")}
             </TabsTrigger>
-            <TabsTrigger value="users" className="gap-2 font-medium">
-              <Users className="w-4 h-4 text-emerald-600" />
+            <TabsTrigger value="users" className="gap-2">
+              <Users className="w-4 h-4" />
               {t("admin.tabUsers")} ({stats?.totalUsers ?? "..."})
             </TabsTrigger>
-            <TabsTrigger value="sets" className="gap-2 font-medium">
-              <Layers className="w-4 h-4 text-indigo-600" />
+            <TabsTrigger value="sets" className="gap-2">
+              <Layers className="w-4 h-4" />
               {t("admin.tabSets")} ({stats?.totalSets ?? "..."})
             </TabsTrigger>
-            <TabsTrigger value="folders" className="gap-2 font-medium">
-              <Folder className="w-4 h-4 text-amber-600" />
+            <TabsTrigger value="folders" className="gap-2">
+              <Folder className="w-4 h-4" />
               {t("admin.tabFolders")} ({stats?.totalFolders ?? "..."})
             </TabsTrigger>
           </TabsList>
@@ -193,74 +183,35 @@ export default function AdminDashboardPage() {
           {/* TAB 1: OVERVIEW */}
           <TabsContent value="overview" className="space-y-6">
             {/* Stat Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card className="border border-border/80 bg-card shadow-xs hover:shadow-md transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                    {t("admin.totalUsers")}
-                  </CardTitle>
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center">
-                    <Users className="w-4 h-4" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-foreground">
-                    {isStatsLoading ? "..." : stats?.totalUsers}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">{t("admin.totalUsersDesc")}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border border-border/80 bg-card shadow-xs hover:shadow-md transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                    {t("admin.totalSets")}
-                  </CardTitle>
-                  <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 flex items-center justify-center">
-                    <Layers className="w-4 h-4" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-foreground">
-                    {isStatsLoading ? "..." : stats?.totalSets}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">{t("admin.totalSetsDesc")}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border border-border/80 bg-card shadow-xs hover:shadow-md transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                    {t("admin.totalCards")}
-                  </CardTitle>
-                  <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center">
-                    <BookOpen className="w-4 h-4" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-foreground">
-                    {isStatsLoading ? "..." : stats?.totalCards}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">{t("admin.totalCardsDesc")}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border border-border/80 bg-card shadow-xs hover:shadow-md transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                    {t("admin.totalFolders")}
-                  </CardTitle>
-                  <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center">
-                    <Folder className="w-4 h-4" />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-foreground">
-                    {isStatsLoading ? "..." : stats?.totalFolders}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">{t("admin.totalFoldersDesc")}</p>
-                </CardContent>
-              </Card>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              <NeoStatCard
+                title={t("admin.totalUsers")}
+                value={isStatsLoading ? "..." : stats?.totalUsers}
+                description={t("admin.totalUsersDesc")}
+                icon={<Users className="w-5 h-5 stroke-[2.5]" />}
+                tone="blue"
+              />
+              <NeoStatCard
+                title={t("admin.totalSets")}
+                value={isStatsLoading ? "..." : stats?.totalSets}
+                description={t("admin.totalSetsDesc")}
+                icon={<Layers className="w-5 h-5 stroke-[2.5]" />}
+                tone="yellow"
+              />
+              <NeoStatCard
+                title={t("admin.totalCards")}
+                value={isStatsLoading ? "..." : stats?.totalCards}
+                description={t("admin.totalCardsDesc")}
+                icon={<BookOpen className="w-5 h-5 stroke-[2.5]" />}
+                tone="mint"
+              />
+              <NeoStatCard
+                title={t("admin.totalFolders")}
+                value={isStatsLoading ? "..." : stats?.totalFolders}
+                description={t("admin.totalFoldersDesc")}
+                icon={<Folder className="w-5 h-5 stroke-[2.5]" />}
+                tone="orange"
+              />
             </div>
 
             {/* Recent Items Preview */}

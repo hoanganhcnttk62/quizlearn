@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { Volume2, VolumeX, Loader2 } from "lucide-react";
+import { Volume2, VolumeX } from "lucide-react";
 import { useSpeech } from "@/hooks/useSpeech";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { cn } from "@/lib/utils";
 
 interface SpeakButtonProps {
@@ -26,11 +27,14 @@ export const SpeakButton: React.FC<SpeakButtonProps> = ({
   size = "md",
   variant = "icon",
   label,
-  title = "Nghe phát âm",
+  title,
 }) => {
   const { speak, stop, isSpeaking, currentSpeakingText } = useSpeech();
+  const { language } = useLanguage();
 
   const isCurrentTextSpeaking = isSpeaking && currentSpeakingText === text;
+  const resolvedTitle =
+    title || (language === "vi" ? "Nghe phát âm" : "Listen to pronunciation");
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -58,23 +62,32 @@ export const SpeakButton: React.FC<SpeakButtonProps> = ({
       <button
         type="button"
         onClick={handleClick}
-        title={title}
+        title={resolvedTitle}
         className={cn(
-          "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 shadow-xs",
+          "inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border-2 border-border text-xs font-extrabold shadow-neo-xs transition-all duration-150 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
           isCurrentTextSpeaking
-            ? "bg-indigo-600 text-white animate-pulse"
-            : "bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200",
+            ? "bg-neo-yellow text-neo-ink animate-pulse"
+            : "bg-neo-blue text-neo-ink hover:-translate-y-[1px] hover:shadow-neo-sm",
           className
         )}
       >
         <Volume2
           className={cn(
-            "h-3.5 w-3.5",
+            "h-3.5 w-3.5 stroke-[2.5]",
             isCurrentTextSpeaking && "animate-bounce",
             iconClassName
           )}
         />
-        <span>{label || (isCurrentTextSpeaking ? "Đang đọc..." : "Nghe phát âm")}</span>
+        <span>
+          {label ||
+            (isCurrentTextSpeaking
+              ? language === "vi"
+                ? "Đang đọc..."
+                : "Speaking..."
+              : language === "vi"
+              ? "Nghe phát âm"
+              : "Pronounce")}
+        </span>
       </button>
     );
   }
@@ -83,20 +96,20 @@ export const SpeakButton: React.FC<SpeakButtonProps> = ({
     <button
       type="button"
       onClick={handleClick}
-      title={title}
+      title={resolvedTitle}
       className={cn(
-        "inline-flex items-center justify-center rounded-full transition-all duration-200",
+        "inline-flex items-center justify-center rounded-lg border-2 border-border shadow-neo-xs transition-all duration-150 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
         isCurrentTextSpeaking
-          ? "bg-indigo-600 text-white shadow-md scale-105"
-          : "bg-gray-100 hover:bg-indigo-50 text-gray-600 hover:text-indigo-600 hover:scale-105 active:scale-95",
+          ? "bg-neo-yellow text-neo-ink"
+          : "bg-card hover:bg-neo-blue text-foreground hover:text-neo-ink",
         sizeStyles[size],
         className
       )}
     >
       {isCurrentTextSpeaking ? (
-        <VolumeX className={cn(iconSizes[size], "animate-pulse", iconClassName)} />
+        <VolumeX className={cn(iconSizes[size], "animate-pulse stroke-[2.5]", iconClassName)} />
       ) : (
-        <Volume2 className={cn(iconSizes[size], iconClassName)} />
+        <Volume2 className={cn(iconSizes[size], "stroke-[2.5]", iconClassName)} />
       )}
     </button>
   );

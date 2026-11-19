@@ -82,108 +82,72 @@ export default function FolderPage() {
 
   return (
     <Protected>
-      <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-
-        {/* Main Content */}
-        <PageLayout>
-
-          <div className="bg-background min-h-screen">
-            <div className="max-w-[1400px] mx-auto p-8 space-y-8">
-              {/* Dashboard Header */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <h1 className="text-2xl font-semibold text-foreground">
-                    {t("folder.title")}
-                  </h1>
+      <PageLayout>
+        <div className="min-h-screen">
+          <div className="max-w-[1400px] mx-auto p-6 sm:p-8 space-y-8">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-5 border-b-2 border-border">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl border-2 border-border bg-neo-orange text-neo-ink shadow-neo-xs flex items-center justify-center">
+                  <Folder className="w-6 h-6 stroke-[2.5]" />
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="bg-muted rounded-lg px-4 py-2 text-sm text-muted-foreground">
-                    30 days Oct 16/21 - Nov 14/21
-                  </div>
-                </div>
+                <h1 className="text-3xl font-black text-foreground">
+                  {t("folder.title")}
+                </h1>
               </div>
+              <CreateFolderDialog onCreateFolder={handleCreateFolder} />
+            </div>
 
-              {/* Top Row */}
-              <div className="p-4 space-y-4">
-                <div className="flex justify-between items-center">
-                  <CreateFolderDialog onCreateFolder={handleCreateFolder} />
-
-                  <div className="flex items-center gap-2">
-                    <Button variant="outline" size="icon">
-                      <Folder className="h-4 w-4" />
-                    </Button>
-
-                    <div className="flex items-center">
-                      <span className="mr-2 text-muted-foreground">Last Updated</span>
-                      <Button variant="ghost" size="icon">
-                        ↓
-                      </Button>
+            {/* Folders Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {folders?.map((folder) => (
+                <Card
+                  key={folder.id}
+                  interactive
+                  className="p-5 group"
+                  onClick={() => handleFolderClick(folder.id)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-11 h-11 rounded-xl border-2 border-border bg-neo-yellow text-neo-ink shadow-neo-xs flex items-center justify-center flex-shrink-0">
+                        <Folder className="w-5 h-5 stroke-[2.5]" />
+                      </div>
+                      <div>
+                        <h3 className="font-extrabold text-lg text-card-foreground">
+                          {folder.name}
+                        </h3>
+                        <p className="text-xs font-bold text-muted-foreground">
+                          {t("folder.setsCount", { count: folder?.totalSets || 0 })}
+                        </p>
+                      </div>
                     </div>
 
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="text-muted-foreground">
-                          See saved or trash
+                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8 opacity-80 group-hover:opacity-100"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem>Saved</DropdownMenuItem>
-                        <DropdownMenuItem>Trash</DropdownMenuItem>
+                        <DropdownMenuItem>
+                          {language === "vi" ? "Đổi tên" : "Rename"}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive focus:bg-neo-coral focus:text-neo-ink">
+                          {t("common.delete")}
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-
-                    <Button variant="outline" size="icon">
-                      <Filter className="h-4 w-4" />
-                    </Button>
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  {folders?.map((folder) => (
-                    <div
-                      key={folder.id}
-                      className="bg-card p-4 rounded-lg shadow-sm border border-border hover:border-primary cursor-pointer transition-all duration-200 group"
-                      onClick={() => handleFolderClick(folder.id)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          {folder.icon}
-                          <div>
-                            <h3 className="font-medium text-card-foreground">{folder.name}</h3>
-                            <p className="text-sm text-muted-foreground">
-                              {t("folder.setsCount", { count: folder?.totalSets || 0 })}
-                            </p>
-                          </div>
-                        </div>
-
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                            <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem>Rename</DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive">
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="fixed bottom-4 right-4">
-                  <Button variant="destructive">Remove ads</Button>
-                </div>
-              </div>
+                </Card>
+              ))}
             </div>
           </div>
-        </PageLayout>
-
-      </div>
+        </div>
+      </PageLayout>
     </Protected>
   );
 }

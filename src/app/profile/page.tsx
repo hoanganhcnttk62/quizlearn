@@ -3,247 +3,215 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
-import Link from "next/link";
-import { Clipboard, Share2, CircleUserRound, Coins } from "lucide-react";
+import { Clipboard, Share2, CircleUserRound, Coins, Flame, Check } from "lucide-react";
 import { useState } from "react";
 import Protected from "@/hooks/useProtected";
-import { cn } from "@/lib/utils";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { useSelector } from "react-redux";
-import { Flame } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function ProfilePage() {
-    const [copied, setCopied] = useState(false);
-    const user = useSelector((state: any) => state.auth.user);
-    // const user = {
-    //     name: "Nguyễn Nam Hoài Phan",
-    //     username: "phnam",
-    //     avatar: "/avatar-placeholder.svg",
-    //     level: 23,
-    //     xp: 182,
-    //     xpMax: 650,
-    //     followers: 0,
-    //     following: 0,
-    //     streak: 2,
-    //     coins: 585,
-    //     badges: [
-    //         {
-    //             id: 1,
-    //             name: "Decked Out",
-    //             icon: "/badges/badge-1.png",
-    //             progress: 32,
-    //             total: 50,
-    //             description: "Flashcard Set(s) Created"
-    //         }
-    //     ],
-    //     inviteCode: "v27mt8",
-    //     inviteLink: "https://knowt.com/invite/v27mt8"
-    // };
+  const { t, language } = useLanguage();
+  const [copied, setCopied] = useState(false);
+  const user = useSelector((state: any) => state.auth.user);
 
-    const copyToClipboard = (text: string) => {
-        navigator.clipboard.writeText(text);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
+  const copyToClipboard = (text: string) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
-    console.log('user', user);
+  const xpPercent =
+    user?.expToNextLevel > 0
+      ? Math.min((user.experiencePoints / user.expToNextLevel) * 100, 100)
+      : 0;
 
-    return (
-        <Protected>
-            <PageLayout>
-                <div className="bg-gray-50 min-h-screen py-8">
-                    <div className="max-w-[1200px] mx-auto px-6">
-                        {/* Widgets Section */}
-                        <main className="container max-w-6xl pt-8 pb-16">
-                            {/* User profile header */}
-                            <div className="bg-muted/30 p-6 rounded-lg relative mb-8">
-                                <div className="absolute top-4 right-4 flex gap-2">
-                                    <Button variant="outline" size="sm">Edit profile</Button>
-                                    <Button variant="outline" size="sm">Customize</Button>
-                                </div>
+  return (
+    <Protected>
+      <PageLayout>
+        <div className="min-h-screen py-8">
+          <div className="max-w-6xl mx-auto px-6 pb-16">
+            {/* User profile header */}
+            <Card className="p-6 sm:p-8 relative mb-8 bg-neo-yellow/25">
+              <div className="absolute top-4 right-4 flex gap-2">
+                <Button variant="outline" size="sm">
+                  {language === "vi" ? "Chỉnh sửa hồ sơ" : "Edit profile"}
+                </Button>
+                <Button variant="secondary" size="sm">
+                  {language === "vi" ? "Tùy chỉnh" : "Customize"}
+                </Button>
+              </div>
 
-                                <div className="flex flex-col items-center sm:items-start sm:flex-row gap-6 pt-8">
-                                    <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-background">
-                                        {user?.avatar != null ? <Image
-                                            src={user?.avatar}
-                                            alt={user.name}
-                                            width={80}
-                                            height={80}
-                                            className="w-full h-full object-cover"
-                                        /> : <CircleUserRound
-                                            width={80}
-                                            height={80}
-                                            className="w-full h-full object-cover"
-                                        />}
-
-                                    </div>
-
-                                    <div className="text-center sm:text-left">
-                                        <h1 className="text-2xl font-bold">{user.email}</h1>
-                                        <p className="text-muted-foreground">@{user.username}</p>
-
-                                        <div className="flex flex-wrap gap-4 mt-3 justify-center sm:justify-start">
-                                            <div className="flex items-center gap-1">
-                                                <span className="text-sm font-semibold">{user.followers ? user.followers : 0}</span>
-                                                <span className="text-sm text-muted-foreground">followers</span>
-                                            </div>
-                                            <div className="flex items-center gap-1">
-                                                <span className="text-sm font-semibold">{user.following ? user.following : 0}</span>
-                                                <span className="text-sm text-muted-foreground">following</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <Button variant="ghost" size="icon" className="absolute bottom-4 right-4">
-                                    <Share2 className="h-5 w-5" />
-                                </Button>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {/* Left column */}
-                                <div className="col-span-2 space-y-6">
-                                    {/* Level card */}
-                                    <Card>
-                                        <CardContent className="p-6">
-                                            <div className="flex justify-between items-center">
-                                                <h2 className="text-lg font-semibold">Level {user.level}</h2>
-                                                <div className="bg-primary/10 p-1 rounded-full">
-                                                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                                                        <span className="text-primary text-sm font-semibold">{user.level}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <Progress value={(user.xp / user.xpMax) * 100} className="h-2 mt-3" />
-                                            <p className="text-sm text-muted-foreground mt-1">{user.experiencePoints}/{user.expToNextLevel} XP</p>
-                                        </CardContent>
-                                    </Card>
-
-                                    {/* Badges section */}
-                                    <Card>
-                                        <CardContent className="p-6">
-                                            <div className="flex justify-between items-center mb-4">
-                                                <h2 className="text-lg font-semibold">Badges</h2>
-                                                <Button variant="outline" size="sm">View more</Button>
-                                            </div>
-
-                                            {/* {user.badges.map((badge) => (
-                                                <div key={badge.id} className="flex items-center gap-4">
-                                                    <div className="relative w-14 h-14 flex-shrink-0">
-                                                        <Image
-                                                            src="/badges/badge-1.png"
-                                                            alt={badge.name}
-                                                            width={56}
-                                                            height={56}
-                                                            className="w-full h-full object-contain"
-                                                        />
-                                                        <div className="absolute -bottom-1 -right-1 bg-amber-400 text-xs font-semibold text-black rounded-full w-5 h-5 flex items-center justify-center">
-                                                            30
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <h3 className="font-semibold">{badge.name}</h3>
-                                                        <Progress value={(badge.progress / badge.total) * 100} className="h-2 mt-2" />
-                                                        <p className="text-sm text-muted-foreground mt-1">
-                                                            {badge.progress}/{badge.total} {badge.description}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            ))} */}
-                                        </CardContent>
-                                    </Card>
-                                </div>
-
-                                {/* Right column */}
-                                <div className="space-y-6">
-                                    {/* Stats cards */}
-                                    <div className="grid grid-cols-2 gap-4">
-                                        {/* Streak card */}
-                                        <Card>
-                                            <CardContent className="p-4 flex flex-col items-center justify-center">
-                                                <h3 className="text-sm font-medium text-muted-foreground">Streak</h3>
-                                                <div className="mt-2 flex items-center">
-                                                    <div className="flex items-center justify-center">
-                                                        <Flame />
-                                                        <span className="text-2xl font-bold ml-1">{user.streak}</span>
-                                                    </div>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-
-                                        {/* Coins card */}
-                                        <Card>
-                                            <CardContent className="p-4 flex flex-col items-center justify-center">
-                                                <h3 className="text-sm font-medium text-muted-foreground">Coins</h3>
-                                                <div className="mt-2 flex items-center">
-                                                    <div className="flex items-center justify-center">
-                                                        <Coins />
-                                                        <span className="text-2xl font-bold ml-1">{user.coins}</span>
-                                                    </div>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-
-                                    {/* Invite friends card */}
-                                    <Card className="overflow-hidden">
-                                        <CardContent className="p-0">
-                                            <div className="p-6 flex flex-col items-center">
-                                                <Image
-                                                    src="/mascot.png"
-                                                    alt="Mascot"
-                                                    width={120}
-                                                    height={120}
-                                                    className="w-32 h-32 object-contain"
-                                                />
-                                                <h3 className="text-lg font-semibold mt-2 text-center">
-                                                    Invite your friends to earn coins for every signup!
-                                                </h3>
-
-                                                <div className="w-full mt-6 space-y-3">
-                                                    <div className="flex items-center justify-between">
-                                                        <span className="text-sm font-medium">Link</span>
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="text-sm truncate max-w-[150px]">{user.inviteLink}</span>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="h-8 w-8"
-                                                                onClick={() => copyToClipboard(user.inviteLink)}
-                                                            >
-                                                                <Clipboard className="h-4 w-4" />
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="flex items-center justify-between">
-                                                        <span className="text-sm font-medium">Code</span>
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="text-sm font-semibold">{user.inviteCode}</span>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="h-8 w-8"
-                                                                onClick={() => copyToClipboard(user.inviteCode)}
-                                                            >
-                                                                <Clipboard className="h-4 w-4" />
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </div>
-                            </div>
-                        </main>
-                    </div>
+              <div className="flex flex-col items-center sm:items-start sm:flex-row gap-6 pt-8 sm:pt-4">
+                <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-border bg-neo-blue shadow-neo-sm flex-shrink-0">
+                  {user?.avatar != null ? (
+                    <Image
+                      src={user?.avatar}
+                      alt={user?.username || "User"}
+                      width={96}
+                      height={96}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <CircleUserRound className="w-full h-full p-2 text-neo-ink" />
+                  )}
                 </div>
-            </PageLayout>
-        </Protected>
-    );
+
+                <div className="text-center sm:text-left">
+                  <h1 className="text-2xl sm:text-3xl font-black text-foreground">
+                    {user?.email}
+                  </h1>
+                  <p className="text-sm font-bold text-muted-foreground mt-0.5">
+                    @{user?.username}
+                  </p>
+
+                  <div className="flex flex-wrap gap-3 mt-4 justify-center sm:justify-start">
+                    <Badge variant="outline" className="text-xs px-3 py-1">
+                      {user?.followers || 0} {language === "vi" ? "người theo dõi" : "followers"}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs px-3 py-1">
+                      {user?.following || 0} {language === "vi" ? "đang theo dõi" : "following"}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+
+              <Button variant="outline" size="icon" className="absolute bottom-4 right-4 h-9 w-9">
+                <Share2 className="h-4 w-4" />
+              </Button>
+            </Card>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Left column */}
+              <div className="md:col-span-2 space-y-6">
+                {/* Level card */}
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-center">
+                      <h2 className="text-xl font-black">
+                        {t("dashboard.level")} {user?.level || 1}
+                      </h2>
+                      <Badge variant="yellow" className="text-sm px-3 py-1">
+                        Lv.{user?.level || 1}
+                      </Badge>
+                    </div>
+                    <Progress value={xpPercent} className="h-4 mt-4" />
+                    <p className="text-xs font-bold text-muted-foreground mt-2">
+                      {user?.experiencePoints || 0}/{user?.expToNextLevel || 100} {t("dashboard.xp")}
+                    </p>
+                  </CardContent>
+                </Card>
+
+                {/* Badges section */}
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-xl font-black">
+                        {language === "vi" ? "Huy hiệu thành tích" : "Badges"}
+                      </h2>
+                      <Button variant="outline" size="sm">
+                        {t("common.viewAll")}
+                      </Button>
+                    </div>
+                    <p className="text-sm font-semibold text-muted-foreground">
+                      {language === "vi"
+                        ? "Hoàn thành các buổi học mỗi ngày để mở khóa huy hiệu mới!"
+                        : "Complete daily study sessions to unlock new badges!"}
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Right column */}
+              <div className="space-y-6">
+                {/* Stats cards */}
+                <div className="grid grid-cols-2 gap-4">
+                  <Card tone="orange">
+                    <CardContent className="p-4 flex flex-col items-center justify-center">
+                      <h3 className="text-xs font-black uppercase tracking-wider text-neo-ink/80">
+                        {t("dashboard.streak")}
+                      </h3>
+                      <div className="mt-2 flex items-center gap-1.5 text-neo-ink">
+                        <Flame className="w-6 h-6 fill-neo-yellow stroke-[2.5]" />
+                        <span className="text-2xl font-black">{user?.streak || 0}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card tone="yellow">
+                    <CardContent className="p-4 flex flex-col items-center justify-center">
+                      <h3 className="text-xs font-black uppercase tracking-wider text-neo-ink/80">
+                        {language === "vi" ? "Xu thưởng" : "Coins"}
+                      </h3>
+                      <div className="mt-2 flex items-center gap-1.5 text-neo-ink">
+                        <Coins className="w-6 h-6 stroke-[2.5]" />
+                        <span className="text-2xl font-black">{user?.coins || 0}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Invite friends card */}
+                <Card className="overflow-hidden">
+                  <CardContent className="p-6 flex flex-col items-center">
+                    <Image
+                      src="/mascot.png"
+                      alt="Mascot"
+                      width={120}
+                      height={120}
+                      className="w-28 h-28 object-contain"
+                    />
+                    <h3 className="text-base font-black mt-3 text-center">
+                      {language === "vi"
+                        ? "Mời bạn bè để nhận thêm xu thưởng cho mỗi lượt đăng ký!"
+                        : "Invite your friends to earn coins for every signup!"}
+                    </h3>
+
+                    <div className="w-full mt-5 space-y-3">
+                      <div className="flex items-center justify-between p-2.5 rounded-lg border-2 border-border bg-muted/50">
+                        <span className="text-xs font-extrabold uppercase">Link</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-bold truncate max-w-[140px]">
+                            {user?.inviteLink || "—"}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={() => copyToClipboard(user?.inviteLink)}
+                          >
+                            {copied ? <Check className="h-3.5 w-3.5" /> : <Clipboard className="h-3.5 w-3.5" />}
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between p-2.5 rounded-lg border-2 border-border bg-muted/50">
+                        <span className="text-xs font-extrabold uppercase">
+                          {language === "vi" ? "Mã mời" : "Code"}
+                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-black">{user?.inviteCode || "—"}</span>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={() => copyToClipboard(user?.inviteCode)}
+                          >
+                            <Clipboard className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </div>
+      </PageLayout>
+    </Protected>
+  );
 }
-
-
-

@@ -104,63 +104,49 @@ export function Header() {
   return (
     <header
       className={cn(
-        "bg-white dark:bg-background border-b border-gray-200 fixed top-0 right-0 z-40 transition-all duration-300",
-        isSidebarOpen ? "left-64" : "left-20"
+        "bg-card border-b-2 border-border fixed top-0 left-0 right-0 z-40 transition-all duration-300",
+        isSidebarOpen ? "md:left-64" : "md:left-20"
       )}
     >
       <div className="px-6">
         <div className="flex h-16 items-center justify-between">
           {/* Left side with logo and navigation */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-6">
             <button
               onClick={handleToggleSidebar}
-              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+              className="p-2 rounded-lg border-2 border-border bg-card text-foreground shadow-neo-xs transition-all hover:bg-neo-yellow hover:text-neo-ink active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
             >
               <svg
-                className="w-6 h-6"
+                className="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                {isSidebarOpen ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                )}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               </svg>
             </button>
 
-            <Link href="/" className="flex items-center">
-              <Image
-                src="/fusion-logo.svg"
-                alt="QuizLearn Logo"
-                width={32}
-                height={32}
-                className="w-8 h-8"
-              />
-              <span className="ml-2 text-xl font-semibold text-gray-900 dark:text-white">QuizLearn</span>
+            <Link href="/dashboard" className="hidden md:flex items-center gap-2">
+              <span className="text-lg font-black tracking-tight text-foreground">
+                QuizLearn
+              </span>
             </Link>
 
-            <nav className="flex items-center gap-6">
+            <nav className="hidden lg:flex items-center gap-2">
               {navigationItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "text-sm font-medium px-4 py-1.5 rounded-full transition-colors",
+                    "text-xs font-extrabold px-3.5 py-1.5 rounded-lg border-2 transition-all duration-150",
                     item.current
-                      ? "bg-[#1a1a1a] dark:bg-white text-white dark:text-black"
-                      : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                      ? "bg-neo-yellow text-neo-ink border-border shadow-neo-xs"
+                      : "border-transparent text-muted-foreground hover:text-foreground hover:border-border hover:bg-muted"
                   )}
                 >
                   {item.name}
@@ -170,84 +156,73 @@ export function Header() {
           </div>
 
           {/* Right side icons and profile */}
-
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <HoverCard>
               <HoverCardTrigger asChild>
-                <button className="relative p-2 text-foreground hover:bg-muted rounded-full">
-                  <Bell className="w-5 h-5" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full ring-2 ring-background" />
+                <button className="relative p-2 rounded-lg border-2 border-border bg-card text-foreground shadow-neo-xs transition-all hover:bg-neo-yellow hover:text-neo-ink active:translate-x-[1px] active:translate-y-[1px] active:shadow-none">
+                  <Bell className="w-4 h-4 stroke-[2.5]" />
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-neo-coral border-2 border-border rounded-full" />
                 </button>
               </HoverCardTrigger>
-              <HoverCardContent className="w-80 rounded-xl shadow-md p-4 border">
-                <div className="text-xl font-bold text-gray-900">
-                  Notifications
+              <HoverCardContent className="w-80 p-4">
+                <div className="text-lg font-black text-foreground">
+                  {t("header.notificationsTitle")}
                 </div>
-                <p className="text-sm text-gray-600 mb-3">
-                  You have new notifications.
+                <p className="text-xs font-semibold text-muted-foreground mb-3">
+                  {t("header.notificationsEmpty")}
                 </p>
-                <div className="flex flex-col gap-2">
-                  {/* Example notifications */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">
-                      New comment on your post
-                    </span>
-                    <span className="text-xs text-gray-500">1 min ago</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">
-                      Your task is due soon
-                    </span>
-                    <span className="text-xs text-gray-500">10 min ago</span>
-                  </div>
-                  {/* Add more notifications here */}
-                </div>
                 <Button
                   variant="outline"
-                  className="text-xs px-3 py-1 rounded-full mt-4"
+                  size="sm"
+                  className="w-full text-xs mt-2"
                 >
-                  View All Notifications
+                  {t("header.viewAllNotifications")}
                 </Button>
               </HoverCardContent>
             </HoverCard>
+
             <HoverCard>
               <HoverCardTrigger asChild>
-                <div className="flex items-center gap-1 cursor-pointer">
-                  <Flame className="text-orange-500 w-5 h-5" />
-                  <span className="font-semibold text-orange-600">{currentStreak}</span>
+                <div className="flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-lg border-2 border-border bg-neo-orange text-neo-ink shadow-neo-xs font-black text-sm transition-all hover:-translate-y-[1px] hover:shadow-neo-sm">
+                  <Flame className="w-4 h-4 fill-neo-yellow text-neo-ink stroke-[2.5]" />
+                  <span>{currentStreak}</span>
                 </div>
               </HoverCardTrigger>
-              <HoverCardContent className="w-80 rounded-xl shadow-md p-4 border">
+              <HoverCardContent className="w-80 p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Flame className="text-orange-500 w-6 h-6" />
-                  <span className="text-xl font-bold text-orange-600">{currentStreak}</span>
+                  <div className="w-9 h-9 rounded-lg border-2 border-border bg-neo-orange flex items-center justify-center shadow-neo-xs">
+                    <Flame className="text-neo-ink fill-neo-yellow w-5 h-5" />
+                  </div>
+                  <span className="text-2xl font-black text-foreground">{currentStreak}</span>
                 </div>
-                <p className="text-sm text-gray-600 mb-3">
-                  Great job! Come back tomorrow to continue your streak!
+                <p className="text-xs font-semibold text-muted-foreground mb-3">
+                  {t("header.streakSubtext")}
                 </p>
-                <div className="flex justify-between mb-3">
+                <div className="flex justify-between mb-3 p-2 rounded-lg border-2 border-border bg-muted/50">
                   {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
                     <div key={index} className="flex flex-col items-center">
                       {streakDays[index] ? (
-                        <Flame className="text-orange-500 w-4 h-4 mb-1" />
+                        <Flame className="text-neo-orange fill-neo-yellow w-4 h-4 mb-1" />
                       ) : (
                         <div className="w-4 h-4 mb-1" />
                       )}
-                      <span className="text-xs text-gray-500">{day}</span>
+                      <span className="text-xs font-extrabold text-foreground">{day}</span>
                     </div>
                   ))}
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between gap-2">
                   <HowToEarnStreakDialog>
                     <Button
                       variant="outline"
-                      className="text-xs px-3 py-1 rounded-full"
+                      size="sm"
+                      className="text-xs flex-1"
                     >
                       {t("header.howToEarnStreak")}
                     </Button>
                   </HowToEarnStreakDialog>
-                  <Button 
-                    className="text-xs px-3 py-1 rounded-full"
+                  <Button
+                    size="sm"
+                    className="text-xs flex-1"
                     onClick={() => router.push("/streak")}
                   >
                     {t("header.viewCalendar")}
@@ -255,6 +230,7 @@ export function Header() {
                 </div>
               </HoverCardContent>
             </HoverCard>
+
             {/* Language Switcher */}
             <LanguageToggle />
 
@@ -262,23 +238,24 @@ export function Header() {
             {isAdmin && (
               <Button
                 size="sm"
-                variant="outline"
-                className="border-blue-600/30 bg-blue-50/70 hover:bg-blue-100 text-blue-700 dark:border-blue-500/30 dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-900/50 flex items-center gap-1.5 rounded-full px-3 py-1 font-semibold text-xs shadow-sm transition-all"
+                variant="secondary"
+                className="flex items-center gap-1.5 text-xs font-extrabold"
                 onClick={() => router.push("/admin")}
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                <ShieldCheck className="w-4 h-4 stroke-[2.5]" />
                 <span className="hidden sm:inline">{t("nav.adminPortal")}</span>
               </Button>
             )}
+
             {/* User avatar dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="w-9 h-9 rounded-full overflow-hidden border-2 border-muted hover:border-primary focus:outline-none focus:border-primary transition-colors">
+                <button className="w-10 h-10 rounded-xl overflow-hidden border-2 border-border bg-neo-mint shadow-neo-xs hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-neo-sm focus:outline-none transition-all">
                   <Image
                     src="/avatar-placeholder.svg"
                     alt="User"
-                    width={36}
-                    height={36}
+                    width={40}
+                    height={40}
                     className="w-full h-full object-cover"
                   />
                 </button>
@@ -290,7 +267,7 @@ export function Header() {
                   <>
                     <DropdownMenuItem
                       onClick={() => router.push("/admin")}
-                      className="font-semibold text-blue-600 dark:text-blue-400 cursor-pointer"
+                      className="font-extrabold bg-neo-blue/25 cursor-pointer"
                     >
                       <ShieldCheck className="mr-2 h-4 w-4" />
                       <span>{t("nav.adminDashboard")}</span>
@@ -307,12 +284,12 @@ export function Header() {
                   <span>{t("nav.settings")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <div className="px-2 py-1.5 flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">{t("settings.theme")}</span>
+                <div className="px-2.5 py-1.5 flex items-center justify-between">
+                  <span className="text-xs font-bold text-muted-foreground">{t("settings.theme")}</span>
                   <ThemeToggle />
                 </div>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
+                <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:bg-neo-coral focus:text-neo-ink">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>{t("nav.logout")}</span>
                 </DropdownMenuItem>
