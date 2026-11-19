@@ -60,33 +60,43 @@ export function Header() {
   } = useLogOutQuery(undefined, { skip: !logout });
 
   const { data: streakData } = useGetUserStreakQuery({});
-  const currentStreak = streakData?.streak?.find((streak: any) => streak.isActive)?.streakLength || 0;
+  const currentStreak =
+    streakData?.currentStreak ??
+    streakData?.streak?.find((streak: any) => streak.isActive)?.streakLength ??
+    0;
 
   // Get streak days for the current week
   const getStreakDaysForWeek = () => {
-    if (!streakData?.streak) return Array(7).fill(false);
-    
+    const days = Array(7).fill(false);
+    if (!streakData?.streak) return days;
+
     const today = new Date();
+    today.setHours(23, 59, 59, 999);
     const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay()); // Start from Sunday
-    
-    return streakData.streak.flatMap((streak: any) => {
+    startOfWeek.setDate(today.getDate() - today.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    streakData.streak.forEach((streak: any) => {
+      if (!streak.startDate) return;
       const startDate = new Date(streak.startDate);
-      const endDate = streak.endDate ? new Date(streak.endDate) : new Date();
-      
-      const days = Array(7).fill(false);
+      let endDate: Date;
+      if (streak.endDate) {
+        endDate = new Date(streak.endDate);
+      } else {
+        endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + Math.max((streak.streakLength || 1) - 1, 0));
+      }
+
       const currentDate = new Date(startDate);
-      
       while (currentDate <= endDate) {
-        const dayIndex = currentDate.getDay();
         if (currentDate >= startOfWeek && currentDate <= today) {
-          days[dayIndex] = true;
+          days[currentDate.getDay()] = true;
         }
         currentDate.setDate(currentDate.getDate() + 1);
       }
-      
-      return days;
     });
+
+    return days;
   };
 
   const streakDays = getStreakDaysForWeek();

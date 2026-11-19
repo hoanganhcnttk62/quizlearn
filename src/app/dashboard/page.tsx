@@ -39,7 +39,10 @@ export default function DashboardPage() {
 
   // Calculate total streak length
   const totalStreakLength = streakData?.streak?.reduce((total: number, streak: any) => total + streak.streakLength, 0) || 0;
-  const currentStreak = streakData?.streak?.find((streak: any) => streak.isActive)?.streakLength || 0;
+  const currentStreak =
+    streakData?.currentStreak ??
+    streakData?.streak?.find((streak: any) => streak.isActive)?.streakLength ??
+    0;
 
   console.log('user', user);
   console.log('recentSets', recentSets);
@@ -70,8 +73,15 @@ export default function DashboardPage() {
     if (!streakData?.streak) return [];
 
     return streakData.streak.flatMap((streak: any) => {
+      if (!streak.startDate) return [];
       const startDate = new Date(streak.startDate);
-      const endDate = streak.endDate ? new Date(streak.endDate) : new Date();
+      let endDate: Date;
+      if (streak.endDate) {
+        endDate = new Date(streak.endDate);
+      } else {
+        endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + Math.max((streak.streakLength || 1) - 1, 0));
+      }
 
       const days = [];
       const currentDate = new Date(startDate);
