@@ -15,7 +15,7 @@ import { useCreateCardMutation, useGetCardBySetIdQuery, useUpdateCardMutation } 
 import Image from "next/image";
 import { useSearchImageMutation } from "../../../redux/features/image/imageApi";
 import { toast } from "sonner";
-import { Sparkles, Loader2, AlertCircle, Check } from "lucide-react";
+import { Sparkles, Loader2, AlertCircle, Check, Globe, Lock } from "lucide-react";
 import {
   useProofreadCardsMutation,
   useCheckSingleTermMutation,
@@ -92,6 +92,7 @@ export default function CreateSetPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [isPublic, setIsPublic] = useState(true);
   // Updated to include imageUrl field
   const [terms, setTerms] = useState([{ term: "", definition: "", id: "", imageUrl: "" }]);
   const { user } = useSelector((state: any) => state.auth);
@@ -328,12 +329,12 @@ export default function CreateSetPage() {
 
       if (!currentSetId) {
         // If the set doesn't exist yet, create it
-        const res = await createSet({ title: title, description: description, folderId: folderId, userId: user.id, isDraft: true, statusId: 1, cardCount: terms.length });
+        const res = await createSet({ title: title, description: description, folderId: folderId, userId: user.id, isPublic, isDraft: true, statusId: 1, cardCount: terms.length });
         currentSetId = res?.data?.set.id;
         setSetId(currentSetId);
       } else {
         // Otherwise, update the set with the new name
-        await updateSet({ id: currentSetId, name: title, description: description, cardCount: terms.length });
+        await updateSet({ id: currentSetId, title: title, description: description, isPublic, cardCount: terms.length });
       }
 
       // Loop over the cards; if a card has no id, create it
@@ -625,6 +626,34 @@ export default function CreateSetPage() {
                     value={description}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-extrabold text-foreground mb-1.5">
+                    {language === "vi" ? "Quyền riêng tư bộ thẻ" : "Set Visibility"}
+                  </label>
+                  <div className="flex items-center gap-2.5">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={isPublic ? "secondary" : "outline"}
+                      onClick={() => setIsPublic(true)}
+                      className="gap-2"
+                    >
+                      <Globe className="w-4 h-4 stroke-[2.5]" />
+                      {t("common.public")}
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={!isPublic ? "default" : "outline"}
+                      onClick={() => setIsPublic(false)}
+                      className="gap-2"
+                    >
+                      <Lock className="w-4 h-4 stroke-[2.5]" />
+                      {t("common.private")}
+                    </Button>
+                  </div>
                 </div>
 
                 {/* Language Settings for Term & Definition */}

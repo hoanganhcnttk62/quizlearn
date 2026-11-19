@@ -10,7 +10,8 @@ import { LineChart } from "@/components/charts/LineChart";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { CampaignTable } from "@/components/dashboard/CampaignTable";
 import { Sidebar } from "@/components/dashboard/Sidebar";
-import { Bell, Settings, Edit, Trash, Plus, PencilLine } from "lucide-react";
+import { Bell, Settings, Edit, Trash, Plus, PencilLine, Globe, Lock } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -100,6 +101,7 @@ export default function DashboardPage() {
   const [currentSet, setCurrentSet] = useState<any>(null);
   const [updateTitle, setUpdateTitle] = useState("");
   const [updateDescription, setUpdateDescription] = useState("");
+  const [updateIsPublic, setUpdateIsPublic] = useState(true);
 
   // Cards editor state
   // const [isCardsDialogOpen, setIsCardsDialogOpen] = useState(false);
@@ -157,6 +159,7 @@ export default function DashboardPage() {
     setCurrentSet(set);
     setUpdateTitle(set.title);
     setUpdateDescription(set.description || "");
+    setUpdateIsPublic(set.isPublic ?? true);
     setIsUpdateDialogOpen(true);
   }
 
@@ -165,15 +168,16 @@ export default function DashboardPage() {
       await updateSet({
         id: currentSet.id,
         title: updateTitle,
-        description: updateDescription
+        description: updateDescription,
+        isPublic: updateIsPublic,
       }).unwrap();
 
       setIsUpdateDialogOpen(false);
-      toast.success("Set updated successfully");
-      refetch(); // Refetch data to update the list
+      toast.success(t("set.updateSuccess"));
+      refetch();
     } catch (error) {
       console.error("Failed to update set:", error);
-      toast.error("Failed to update set");
+      toast.error(t("common.error"));
     }
   }
 
@@ -393,8 +397,19 @@ export default function DashboardPage() {
                         className="flex justify-between items-center p-4"
                         onClick={() => router.push(`/set/${set.id}`)}
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2.5 flex-wrap">
                           <span className="font-black text-lg text-neo-ink">{set.title}</span>
+                          <Badge variant={set.isPublic ? "blue" : "neutral"} className="text-[10px]">
+                            {set.isPublic ? (
+                              <>
+                                <Globe className="w-3 h-3" /> {t("common.public")}
+                              </>
+                            ) : (
+                              <>
+                                <Lock className="w-3 h-3" /> {t("common.private")}
+                              </>
+                            )}
+                          </Badge>
                         </div>
 
                         <div className="flex items-center gap-2">
@@ -501,43 +516,70 @@ export default function DashboardPage() {
 
       {/* Update Dialog */}
       <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[440px]">
           <DialogHeader>
-            <DialogTitle>Edit Set</DialogTitle>
+            <DialogTitle>
+              {language === "vi" ? "Chỉnh sửa bộ thẻ" : "Edit Set"}
+            </DialogTitle>
             <DialogDescription>
-              Make changes to the set. Click save when you're done.
+              {language === "vi"
+                ? "Cập nhật tên, mô tả và quyền riêng tư của bộ thẻ."
+                : "Update set title, description, and visibility."}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="title" className="text-right">
-                Title
+            <div className="space-y-1.5">
+              <Label htmlFor="title" className="font-extrabold">
+                {t("set.title")}
               </Label>
               <Input
                 id="title"
                 value={updateTitle}
                 onChange={(e) => setUpdateTitle(e.target.value)}
-                className="col-span-3"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="description" className="text-right">
-                Description
+            <div className="space-y-1.5">
+              <Label htmlFor="description" className="font-extrabold">
+                {t("set.description")}
               </Label>
               <Textarea
                 id="description"
                 value={updateDescription}
                 onChange={(e) => setUpdateDescription(e.target.value)}
-                className="col-span-3"
               />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="font-extrabold">
+                {language === "vi" ? "Quyền riêng tư" : "Visibility"}
+              </Label>
+              <div className="grid grid-cols-2 gap-2.5">
+                <Button
+                  type="button"
+                  variant={updateIsPublic ? "secondary" : "outline"}
+                  onClick={() => setUpdateIsPublic(true)}
+                  className="gap-2"
+                >
+                  <Globe className="w-4 h-4 stroke-[2.5]" />
+                  {t("common.public")}
+                </Button>
+                <Button
+                  type="button"
+                  variant={!updateIsPublic ? "default" : "outline"}
+                  onClick={() => setUpdateIsPublic(false)}
+                  className="gap-2"
+                >
+                  <Lock className="w-4 h-4 stroke-[2.5]" />
+                  {t("common.private")}
+                </Button>
+              </div>
             </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setIsUpdateDialogOpen(false)}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button type="button" onClick={handleUpdateSet}>
-              Save changes
+              {t("set.saveChanges")}
             </Button>
           </DialogFooter>
         </DialogContent>

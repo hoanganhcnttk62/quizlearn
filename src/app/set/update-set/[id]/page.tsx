@@ -20,7 +20,9 @@ import {
   Sparkles,
   Loader2,
   AlertCircle,
-  Check
+  Check,
+  Globe,
+  Lock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Protected from "@/hooks/useProtected";
@@ -129,6 +131,7 @@ export default function UpdateSetPage() {
   // Set data states
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [isPublic, setIsPublic] = useState(true);
   const [terms, setTerms] = useState<Card[]>([]);
   
   // Autosave states
@@ -186,6 +189,7 @@ export default function UpdateSetPage() {
       if (currentSet) {
         setTitle(currentSet.title || "");
         setDescription(currentSet.description || "");
+        setIsPublic(currentSet.isPublic ?? true);
       }
     }
   }, [allSetsData, setId]);
@@ -207,7 +211,7 @@ export default function UpdateSetPage() {
     }, 3000);
     
     return () => clearTimeout(timer);
-  }, [terms, title, description]);
+  }, [terms, title, description, isPublic]);
 
   // Time since last save effect
   useEffect(() => {
@@ -458,6 +462,7 @@ export default function UpdateSetPage() {
         id: setId,
         title,
         description,
+        isPublic,
         cardCount: terms.length
       }).unwrap();
       
@@ -775,6 +780,34 @@ export default function UpdateSetPage() {
                     value={description}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-extrabold text-foreground mb-1.5">
+                    {language === "vi" ? "Quyền riêng tư bộ thẻ" : "Set Visibility"}
+                  </label>
+                  <div className="flex items-center gap-2.5">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={isPublic ? "secondary" : "outline"}
+                      onClick={() => setIsPublic(true)}
+                      className="gap-2"
+                    >
+                      <Globe className="w-4 h-4 stroke-[2.5]" />
+                      {t("common.public")}
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={!isPublic ? "default" : "outline"}
+                      onClick={() => setIsPublic(false)}
+                      className="gap-2"
+                    >
+                      <Lock className="w-4 h-4 stroke-[2.5]" />
+                      {t("common.private")}
+                    </Button>
+                  </div>
                 </div>
 
                 {/* Language Settings for Term & Definition */}
